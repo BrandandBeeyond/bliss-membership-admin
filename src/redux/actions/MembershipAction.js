@@ -6,7 +6,7 @@ import {
 } from "../constants/MembershipConstant";
 import { API_SERVER } from "../../config/Key";
 
-export const getAllMemberships = () => async (dispatch) => {
+export const getAllBookings = () => async (dispatch) => {
   try {
     dispatch({ type: GET_ALL_BOOKED_MEMBERSHIPS_REQUEST });
 
@@ -17,6 +17,7 @@ export const getAllMemberships = () => async (dispatch) => {
       payload: data.bookings,
     });
 
+  
     return data.bookings;
   } catch (error) {
     dispatch({

@@ -6,7 +6,7 @@ import {
 
 let initialState = {
   loading: false,
-  bookings: null,
+  bookings: [],
   error: null,
 };
 

@@ -5,13 +5,14 @@ import {
   legacy_createStore as createStore,
 } from "redux";
 import { persistReducer, persistStore } from "redux-persist";
-import { thunk } from "redux-thunk";
+import {thunk} from "redux-thunk";
 import storage from "redux-persist/lib/storage";
 import { MembershipBookingReducer } from "./reducers/MembershipBookingReducer";
 
 const persistConfig = {
   key: "root",
   storage,
+  blacklist: ["bookings"],
 };
 
 const rootReducer = combineReducers({
@@ -20,14 +21,11 @@ const rootReducer = combineReducers({
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-const initalState = {};
 
-const middleware = [thunk];
 
 const store = createStore(
   persistedReducer,
-  initalState,
-  composeWithDevTools(applyMiddleware(...middleware))
+  composeWithDevTools(applyMiddleware(thunk))
 );
 
 const persistor = persistStore(store);
