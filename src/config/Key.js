@@ -1,0 +1,1 @@
+export const API_SERVER = "https://membership-bliss-server.onrender.com/api/v1"

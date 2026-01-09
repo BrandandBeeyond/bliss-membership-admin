@@ -6,6 +6,7 @@ import {
 } from "redux";
 import { persistReducer, persistStore } from "redux-persist";
 import { thunk } from "redux-thunk";
+import storage from "redux-persist/lib/storage";
 import { MembershipBookingReducer } from "./reducers/MembershipBookingReducer";
 
 const persistConfig = {
@@ -13,13 +14,13 @@ const persistConfig = {
   storage,
 };
 
-const rootReducer = combineReducers({});
+const rootReducer = combineReducers({
+  bookings: MembershipBookingReducer,
+});
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-const initalState = {
-  bookings: MembershipBookingReducer,
-};
+const initalState = {};
 
 const middleware = [thunk];
 

@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router";
 
 // Assume these icons are imported from an icon library
 import {
+  BookMarkIcon,
   BoxCubeIcon,
   CalenderIcon,
   ChevronDownIcon,
@@ -14,6 +15,7 @@ import {
   PlugInIcon,
   TableIcon,
   UserCircleIcon,
+  UserIcon,
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
 import SidebarWidget from "./SidebarWidget";
@@ -25,30 +27,40 @@ const navItems = [
     path: "/",
   },
   {
-    icon: <PieChartIcon />,
-    name: "Bookings",
-    subItems: [
-      { name: "Memberships booked", path: "/line-chart", pro: false },
-      { name: "Memberships Cancelled", path: "/bar-chart", pro: false },
-    ],
+    icon: <BookMarkIcon />,
+    name: "Category",
+    path: "/categories",
   },
   {
-    icon: <UserCircleIcon />,
-    name: "Users",
-    subItems: [
-      { name: "Memberships booked", path: "/line-chart", pro: false },
-      { name: "", path: "/bar-chart", pro: false },
-    ],
+    icon: <BookMarkIcon />,
+    name: "Updates",
+    path: "/updates",
   },
+  {
+    icon: <BookMarkIcon />,
+    name: "Vouchers",
+    path: "/vouchers",
+  },
+  {
+    icon: <UserIcon />,
+    name: "Users",
+    path: "/users",
+  },
+
+ 
 ];
 
 const othersItems = [
+ 
   {
-    icon: <PieChartIcon />,
-    name: "Charts",
+    icon: <BoxCubeIcon />,
+    name: "Bookings",
     subItems: [
-      { name: "Line Chart", path: "/line-chart", pro: false },
-      { name: "Bar Chart", path: "/bar-chart", pro: false },
+      { name: "All bookings", path: "/bookings", pro: false },
+      { name: "User arrivals", path: "/user-arrivals", pro: false },
+      { name: "Vouchers", path: "/vouchers", pro: false },
+      { name: "Customers", path: "/customers", pro: false },
+      
     ],
   },
   {
@@ -59,7 +71,7 @@ const othersItems = [
       { name: "Avatar", path: "/avatars", pro: false },
       { name: "Badge", path: "/badge", pro: false },
       { name: "Buttons", path: "/buttons", pro: false },
-      { name: "Images", path: "/images", pro: false },
+      { name: "Images", path: "/basic-tables", pro: false },
       { name: "Videos", path: "/videos", pro: false },
     ],
   },
@@ -284,17 +296,17 @@ const AppSidebar = () => {
             <>
               <img
                 className="dark:hidden"
-                src="/images/logo/logo.svg"
+                src="/images/logo/bliss-logo.png"
                 alt="Logo"
-                width={150}
-                height={40}
+                width={60}
+                height={60}
               />
               <img
                 className="hidden dark:block"
-                src="/images/logo/logo-dark.svg"
+                src="/images/logo/bliss-logo.png"
                 alt="Logo"
-                width={150}
-                height={40}
+                width={60}
+                height={60}
               />
             </>
           ) : (
@@ -335,7 +347,7 @@ const AppSidebar = () => {
                 }`}
               >
                 {isExpanded || isHovered || isMobileOpen ? (
-                  "Others"
+                  "bookings"
                 ) : (
                   <HorizontaLDots />
                 )}
