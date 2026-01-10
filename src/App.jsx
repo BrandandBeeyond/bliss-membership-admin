@@ -8,7 +8,7 @@ import Images from "./pages/UiElements/Images";
 import Alerts from "./pages/UiElements/Alerts";
 import Badges from "./pages/UiElements/Badges";
 import Avatars from "./pages/UiElements/Avatars";
-import Buttons from "./pages/UiElements/Buttons";
+
 import LineChart from "./pages/Charts/LineChart";
 import BarChart from "./pages/Charts/BarChart";
 import Calendar from "./pages/Calendar";
@@ -20,6 +20,7 @@ import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
 import BasicTables from "./pages/Tables/BasicTables";
 import Bookings from "./pages/bookings/Bookings";
+// import Button from "./components/ui/button/Button";
 
 export default function App() {
   return (
@@ -46,7 +47,7 @@ export default function App() {
             <Route path="/alerts" element={<Alerts />} />
             <Route path="/avatars" element={<Avatars />} />
             <Route path="/badge" element={<Badges />} />
-            <Route path="/buttons" element={<Buttons />} />
+            {/* <Route path="/buttons" element={<Button />} /> */}
             <Route path="/images" element={<Images />} />
             <Route path="/videos" element={<Videos />} />
 
