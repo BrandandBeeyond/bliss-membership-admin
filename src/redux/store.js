@@ -5,9 +5,10 @@ import {
   legacy_createStore as createStore,
 } from "redux";
 import { persistReducer, persistStore } from "redux-persist";
-import {thunk} from "redux-thunk";
+import { thunk } from "redux-thunk";
 import storage from "redux-persist/lib/storage";
 import { MembershipBookingReducer } from "./reducers/MembershipBookingReducer";
+import { AdminAuthReducer } from "./reducers/AdminReducer";
 
 const persistConfig = {
   key: "root",
@@ -17,11 +18,10 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   bookings: MembershipBookingReducer,
+  adminAuth: AdminAuthReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
-
-
 
 const store = createStore(
   persistedReducer,

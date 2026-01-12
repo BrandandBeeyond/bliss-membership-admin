@@ -21,6 +21,8 @@ const Button = ({
   const variantClasses = {
     primary:
       "bg-brand-500 text-white shadow-theme-xs hover:bg-brand-600 disabled:bg-brand-300",
+    theme:
+      "bg-green-800 text-white shadow-theme-xs hover:bg-green-600 disabled:bg-green-300",
   
     outlineDanger:
       "bg-white text-red-400 ring-1 ring-inset ring-gray-300 hover:bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:ring-red-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-300",
