@@ -10,7 +10,7 @@ import {
 let initialState = {
   loading: false,
   bookings: [],
-  approving:false,
+  approving: false,
   error: null,
 };
 
@@ -36,7 +36,6 @@ export const MembershipBookingReducer = (state = initialState, action) => {
         error: action.payload,
       };
 
-
     case APPROVE_MEMBERSHIP_BOOKING_REQUEST:
       return {
         ...state,
@@ -44,15 +43,14 @@ export const MembershipBookingReducer = (state = initialState, action) => {
         error: null,
       };
 
-
     case APPROVE_MEMBERSHIP_BOOKING_SUCCESS:
-      return{
+      return {
         ...state,
         approving: false,
-        bookings: state.bookings.map(booking =>
+        bookings: state.bookings.map((booking) =>
           booking.id === action.payload.id ? action.payload : booking
         ),
-      }
+      };
 
     case APPROVE_MEMBERSHIP_BOOKING_FAILURE:
       return {
@@ -60,7 +58,6 @@ export const MembershipBookingReducer = (state = initialState, action) => {
         approving: false,
         error: action.payload,
       };
-
 
     default:
       return state;

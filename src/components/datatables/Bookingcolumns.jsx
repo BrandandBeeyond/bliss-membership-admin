@@ -114,7 +114,7 @@ export const bookingColumns = (openModal) => [
       <Badge
         size="sm"
         color={
-          info.getValue() === "Completed"
+          info.getValue() === "Approved"
             ? "success"
             : info.getValue() === "Pending"
             ? "warning"
@@ -142,7 +142,17 @@ export const bookingColumns = (openModal) => [
   {
     header: "Arrival Action",
     accessorKey: "status",
-    cell: ({ row }) => (
+    cell: ({ row }) => {
+      const status = row.original.arrivalStatus;
+
+      if (status === "Approved") {
+        return (
+          <Button size="xs" variant="outlineSuccess" disabled>
+            Approved
+          </Button>
+        );
+      }
+
       <div className="flex flex-row gap-x-3">
         <Button
           size="xs"
@@ -151,10 +161,14 @@ export const bookingColumns = (openModal) => [
         >
           Approve
         </Button>
-        <Button size="xs" variant="outlineDanger" onClick={()=>openModal("reject",row.original)}>
+        <Button
+          size="xs"
+          variant="outlineDanger"
+          onClick={() => openModal("reject", row.original)}
+        >
           Reject
         </Button>
-      </div>
-    ),
+      </div>;
+    },
   },
 ];

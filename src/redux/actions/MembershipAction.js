@@ -19,7 +19,6 @@ export const getAllBookings = () => async (dispatch) => {
       payload: data.bookings,
     });
 
-  
     return data.bookings;
   } catch (error) {
     dispatch({
@@ -35,22 +34,33 @@ export const getAllBookings = () => async (dispatch) => {
   }
 };
 
+export const approveMembershipBooking =
+  (bookingId, arrivalStatus, arrivalDate = null) =>
+  async (dispatch) => {
+    try {
+      const admintoken = localStorage.getItem("adminToken");
 
-export const approveMembershipBooking = (bookingId,arrivalStatus,arrivalDate = null) => async (dispatch) => {
-  try {
-    const { data } = await axios.put(`${API_SERVER}/bookings/approve/${bookingId}`, {
-      arrivalStatus,
-      arrivalDate
-    });
+      const { data } = await axios.put(
+        `${API_SERVER}/bookings/membership/${bookingId}/arrival`,
+        {
+          arrivalStatus,
+          arrivalDate,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${admintoken}`,
+          },
+        }
+      );
 
-    dispatch({
-      type: APPROVE_MEMBERSHIP_BOOKING_SUCCESS,
-      payload: data.booking,
-    });
-  } catch (error) {
-    dispatch({
-      type: APPROVE_MEMBERSHIP_BOOKING_FAILURE,
-      payload: error.response?.data?.message || error.message,
-    });
-  }
-};
+      dispatch({
+        type: APPROVE_MEMBERSHIP_BOOKING_SUCCESS,
+        payload: data.booking,
+      });
+    } catch (error) {
+      dispatch({
+        type: APPROVE_MEMBERSHIP_BOOKING_FAILURE,
+        payload: error.response?.data?.message || error.message,
+      });
+    }
+  };
