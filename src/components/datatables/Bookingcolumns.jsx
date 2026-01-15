@@ -153,22 +153,25 @@ export const bookingColumns = (openModal) => [
         );
       }
 
-      <div className="flex flex-row gap-x-3">
-        <Button
-          size="xs"
-          variant="primary"
-          onClick={() => openModal("approve", row.original)}
-        >
-          Approve
-        </Button>
-        <Button
-          size="xs"
-          variant="outlineDanger"
-          onClick={() => openModal("reject", row.original)}
-        >
-          Reject
-        </Button>
-      </div>;
+      return (
+        <div className="flex flex-row gap-x-3">
+          <Button
+            size="xs"
+            variant="primary"
+            onClick={() => openModal("approve", row.original)}
+          >
+            Approve
+          </Button>
+
+          <Button
+            size="xs"
+            variant="outlineDanger"
+            onClick={() => openModal("reject", row.original)}
+          >
+            Reject
+          </Button>
+        </div>
+      );
     },
   },
 ];
