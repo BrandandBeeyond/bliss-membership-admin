@@ -9,6 +9,7 @@ import { thunk } from "redux-thunk";
 import storage from "redux-persist/lib/storage";
 import { MembershipBookingReducer } from "./reducers/MembershipBookingReducer";
 import { AdminAuthReducer } from "./reducers/AdminReducer";
+import { VoucherReducer } from "./reducers/VoucherReducer";
 
 const persistConfig = {
   key: "root",
@@ -19,6 +20,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
   bookings: MembershipBookingReducer,
   adminAuth: AdminAuthReducer,
+  vouchers: VoucherReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

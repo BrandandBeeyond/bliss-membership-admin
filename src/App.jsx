@@ -22,6 +22,7 @@ import Bookings from "./pages/bookings/Bookings";
 import SignIn from "./pages/AuthPages/SignIn";
 import PublicRoute from "./routes/PublicRoute";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import Voucher from "./pages/vouchers/Voucher";
 // import Button from "./components/ui/button/Button";
 
 export default function App() {
@@ -64,6 +65,7 @@ export default function App() {
               <Route path="/bar-chart" element={<BarChart />} />
 
               <Route path="/bookings" element={<Bookings />} />
+              <Route path="/vouchers" element={<Voucher />} />
             </Route>
           </Route>
 
