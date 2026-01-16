@@ -11,7 +11,7 @@ let initialState = {
 };
 
 export const VoucherReducer = (state = initialState, action) => {
-  switch (action.payload) {
+  switch (action.type) {
     case GET_ALL_REQUESTED_REEDEEMED_VOUCHERS_REQUEST:
       return {
         ...state,
