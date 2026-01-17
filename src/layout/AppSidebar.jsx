@@ -36,11 +36,7 @@ const navItems = [
     name: "Updates",
     path: "/updates",
   },
-  {
-    icon: <BookMarkIcon />,
-    name: "Vouchers",
-    path: "/vouchers",
-  },
+  
   {
     icon: <UserIcon />,
     name: "Users",

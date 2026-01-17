@@ -3,18 +3,34 @@ import Badge from "../ui/badge/Badge";
 
 export const voucherColumns = (openModal) => [
   {
-    header: "Voucher Code",
-    accessorKey: "voucherCode",
-    cell: (info) => (
-      <span className="min-w-[140px] block">{info.getValue()}</span>
-    ),
+    header: "Membership",
+    accessorKey: "Membership",
+    cell: ({ row }) => {
+      const membership = row.original.membershipBookingId;
+      return (
+        <div className="min-w-[160px]">
+          <div className="font-xs">
+            Member:{membership.memberDetails.fullname || "N/A"}
+          </div>
+          <div className="font-xs text-green-600">
+            {membership.membershipPlanId.name || "N/A"}
+          </div>
+        </div>
+      );
+    },
   },
   {
-    header: "User Name",
-    accessorKey: "userName",
-    cell: (info) => (
-      <span className="min-w-[140px] block">{info.getValue()}</span>
-    ),
+    header: "Vouchers",
+    cell: ({ row }) => {
+      const { offerTitle, itemName } = row.original;
+
+      return (
+        <div className="min-w-[160px]">
+          <div className="font-xs">{offerTitle || "N/A"}</div>
+          <div className="text-xs text-green-500">{itemName || "N/A"}</div>
+        </div>
+      );
+    },
   },
   {
     header: "Quantity requested",
@@ -48,12 +64,18 @@ export const voucherColumns = (openModal) => [
       const status = row.original.status;
 
       if (status === "Approved") {
-        return <span className="text-green-500 font-medium">Approved</span>;
+        return (
+          <Button size="xs" variant="outlineSuccess" disabled>
+            Approved
+          </Button>
+        );
       }
 
       return (
         <Button
-          onClick={() => openModal(row.original)}
+          variant="primary"
+          size="xs"
+          onClick={() => openModal("verifycode",row.original)}
           disabled={status !== "Pending"}
         >
           Verify Code
@@ -62,7 +84,7 @@ export const voucherColumns = (openModal) => [
     },
   },
   {
-    header: "Status",
+    header: "Redeem Status",
     accessorKey: "status",
     cell: (info) => (
       <Badge
@@ -71,8 +93,8 @@ export const voucherColumns = (openModal) => [
           info.getValue() === "Approved"
             ? "success"
             : info.getValue() === "Pending"
-            ? "warning"
-            : "error"
+              ? "warning"
+              : "error"
         }
       >
         {info.getValue()}

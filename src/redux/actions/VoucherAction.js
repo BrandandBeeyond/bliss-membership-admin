@@ -4,6 +4,9 @@ import {
   GET_ALL_REQUESTED_REEDEEMED_VOUCHERS_FAILURE,
   GET_ALL_REQUESTED_REEDEEMED_VOUCHERS_REQUEST,
   GET_ALL_REQUESTED_REEDEEMED_VOUCHERS_SUCCESS,
+  VERIFY_REEDEMPTION_FAILURE,
+  VERIFY_REEDEMPTION_REQUEST,
+  VERIFY_REEDEMPTION_SUCCESS,
 } from "../constants/MembershipConstant";
 
 export const getAllRequestedRedeemVouchers = () => async (dispatch) => {
@@ -31,8 +34,49 @@ export const getAllRequestedRedeemVouchers = () => async (dispatch) => {
     });
     console.log(
       "requested redeemed vouchers fetching failure:",
-      error.response?.data || error
+      error.response?.data || error,
     );
     throw error;
   }
 };
+
+export const verifyVoucherwithCode =
+  (redemptionId, otpCode, adminId, quantityApproved) => async (dispatch) => {
+    try {
+      dispatch({ type: VERIFY_REEDEMPTION_REQUEST });
+
+      const admintoken = localStorage.getItem("adminToken");
+
+      const { data } = await axios.post(
+        `${API_SERVER}/vouchers/voucher/redeem/approve-with-code`,
+        {
+          redemptionId,
+          otpCode,
+          adminId,
+          quantityApproved,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${admintoken}`,
+          },
+        },
+      );
+
+      dispatch({
+        type: VERIFY_REEDEMPTION_SUCCESS,
+        payload: data.data,
+      });
+
+      return data;
+    } catch (error) {
+      dispatch({
+        type: VERIFY_REEDEMPTION_FAILURE,
+        payload: error.response?.data?.message || error.message,
+      });
+      console.log(
+        "voucher reedeem verification failure:",
+        error.response?.data || error,
+      );
+      throw error;
+    }
+  };
