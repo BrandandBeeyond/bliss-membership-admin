@@ -3,6 +3,9 @@ import {
   ADMIN_LOGIN_REQUEST,
   ADMIN_LOGIN_SUCCESS,
   ADMIN_LOGOUT,
+  GET_ADMIN_DETAILS_FAILURE,
+  GET_ADMIN_DETAILS_REQUEST,
+  GET_ADMIN_DETAILS_SUCCESS,
 } from "../constants/AdminConstant";
 
 const adminFromStorage = localStorage.getItem("adminInfo")
@@ -22,12 +25,14 @@ const initialState = {
 export const AdminAuthReducer = (state = initialState, action) => {
   switch (action.type) {
     case ADMIN_LOGIN_REQUEST:
+    case GET_ADMIN_DETAILS_REQUEST:
       return {
         ...state,
         loading: true,
       };
 
     case ADMIN_LOGIN_SUCCESS:
+    case GET_ADMIN_DETAILS_SUCCESS:
       return {
         ...state,
         loading: false,
@@ -38,6 +43,7 @@ export const AdminAuthReducer = (state = initialState, action) => {
       };
 
     case ADMIN_LOGIN_FAILURE:
+    case GET_ADMIN_DETAILS_FAILURE:
       return {
         loading: false,
         error: action.payload,

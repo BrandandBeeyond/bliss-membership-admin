@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { Link, useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { API_SERVER } from "../../config/Key";
-import { AdminLogout } from "../../redux/actions/AdminAction";
+import { AdminLogout, getAdminDetails } from "../../redux/actions/AdminAction";
 
 export default function UserDropdown() {
   const navigate = useNavigate();
@@ -13,6 +13,13 @@ export default function UserDropdown() {
   const { admin, isAuthenticated } = useSelector((state) => state.adminAuth);
 
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(()=>{
+     dispatch(getAdminDetails());
+  },[dispatch]);
+
+  console.log("admin log is",admin);
+  
 
   const handleLogout = async () => {
     try {
@@ -46,7 +53,7 @@ export default function UserDropdown() {
         </span>
 
         <span className="block mr-1 font-medium text-theme-sm">
-          {admin.admin.name}
+          {admin.name}
         </span>
         <svg
           className={`stroke-gray-500 dark:stroke-gray-400 transition-transform duration-200 ${
@@ -75,10 +82,10 @@ export default function UserDropdown() {
       >
         <div>
           <span className="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
-            {admin.admin.name}
+            {admin.name}
           </span>
           <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
-            {admin.admin.email}
+            {admin.email}
           </span>
         </div>
 

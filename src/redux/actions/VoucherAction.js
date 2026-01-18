@@ -40,43 +40,37 @@ export const getAllRequestedRedeemVouchers = () => async (dispatch) => {
   }
 };
 
-export const verifyVoucherwithCode =
-  (redemptionId, otpCode, adminId, quantityApproved) => async (dispatch) => {
-    try {
-      dispatch({ type: VERIFY_REEDEMPTION_REQUEST });
+export const verifyVoucherwithCode = (payload) => async (dispatch) => {
+  try {
+    dispatch({ type: VERIFY_REEDEMPTION_REQUEST });
 
-      const admintoken = localStorage.getItem("adminToken");
+    const admintoken = localStorage.getItem("adminToken");
 
-      const { data } = await axios.post(
-        `${API_SERVER}/vouchers/voucher/redeem/approve-with-code`,
-        {
-          redemptionId,
-          otpCode,
-          adminId,
-          quantityApproved,
+    const { data } = await axios.post(
+      `${API_SERVER}/vouchers/voucher/redeem/approve-with-code`,
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${admintoken}`,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${admintoken}`,
-          },
-        },
-      );
+      },
+    );
 
-      dispatch({
-        type: VERIFY_REEDEMPTION_SUCCESS,
-        payload: data.data,
-      });
+    dispatch({
+      type: VERIFY_REEDEMPTION_SUCCESS,
+      payload: data.data,
+    });
 
-      return data;
-    } catch (error) {
-      dispatch({
-        type: VERIFY_REEDEMPTION_FAILURE,
-        payload: error.response?.data?.message || error.message,
-      });
-      console.log(
-        "voucher reedeem verification failure:",
-        error.response?.data || error,
-      );
-      throw error;
-    }
-  };
+    return data;
+  } catch (error) {
+    dispatch({
+      type: VERIFY_REEDEMPTION_FAILURE,
+      payload: error.response?.data?.message || error.message,
+    });
+    console.log(
+      "voucher reedeem verification failure:",
+      error.response?.data || error,
+    );
+    throw error;
+  }
+};

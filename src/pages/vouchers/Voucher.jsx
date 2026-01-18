@@ -11,13 +11,12 @@ import DataTable from "../../components/datatables/DataTable";
 import { voucherColumns } from "../../components/datatables/Vouchercolumns";
 import { Modal } from "../../components/ui/modal";
 import { BeatLoader } from "react-spinners";
+import { getAdminDetails } from "../../redux/actions/AdminAction";
 
 const Voucher = () => {
   const dispatch = useDispatch();
   const { admin } = useSelector((state) => state.adminAuth);
   const { vouchers = [] } = useSelector((state) => state.vouchers);
-
-  console.log("vouchers coming", vouchers);
 
   const [modalType, setModalType] = useState(null);
   const [selectedVoucher, setSelectedVoucher] = useState(null);
@@ -25,7 +24,9 @@ const Voucher = () => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [verifying, setVerifying] = useState(false);
 
-  console.log("the admin id is", admin._id);
+  useEffect(() => {
+    dispatch(getAdminDetails());
+  }, [dispatch]);
 
   const openModal = (type, voucher) => {
     setSelectedVoucher(voucher);
@@ -60,6 +61,8 @@ const Voucher = () => {
 
   const handleVerify = async () => {
     try {
+
+
       setVerifying(true);
 
       const otpCode = otp.join("");
@@ -69,26 +72,26 @@ const Voucher = () => {
         return;
       }
 
-      console.log("Sending payload:", {
+      const payload = {
         redemptionId: selectedVoucher._id,
         otpCode,
-        adminId: admin._id,
+        adminId: admin.id,
         quantityApproved,
-      });
-      // const res = await dispatch(
-      //   verifyVoucherwithCode(
-      //     selectedVoucher._id,
-      //     otpCode,
-      //     admin._id,
-      //     quantityApproved,
-      //   ),
-      // );
+      };
 
-      // if (res?.success) {
-      //   alert("Voucher Redeem request accepted !");
-      // }
+      const res = await dispatch(verifyVoucherwithCode(payload));
+
+
+      if (res?.success) {
+        alert("Voucher Redeem request accepted !");
+
+        closeModal();
+
+        dispatch(getAllRequestedRedeemVouchers());
+      }
     } catch (error) {
-      console.error("error verifying code", error);
+      console.error("Backend error:", error.response?.data);
+      alert(error.response?.data?.message);
     } finally {
       setVerifying(false);
     }

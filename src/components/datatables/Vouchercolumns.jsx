@@ -3,22 +3,24 @@ import Badge from "../ui/badge/Badge";
 
 export const voucherColumns = (openModal) => [
   {
-    header: "Membership",
-    accessorKey: "Membership",
-    cell: ({ row }) => {
-      const membership = row.original.membershipBookingId;
-      return (
-        <div className="min-w-[160px]">
-          <div className="font-xs">
-            Member:{membership.memberDetails.fullname || "N/A"}
-          </div>
-          <div className="font-xs text-green-600">
-            {membership.membershipPlanId.name || "N/A"}
-          </div>
+  header: "Membership",
+  accessorKey: "Membership",
+  cell: ({ row }) => {
+    const membership = row.original.membershipBookingId;
+
+    return (
+      <div className="min-w-[160px]">
+        <div className="font-xs">
+          Member: {membership?.memberDetails.fullname || "N/A"}
         </div>
-      );
-    },
+        <div className="font-xs text-green-600">
+          {membership?.membershipPlanId.name || "N/A"}
+        </div>
+      </div>
+    );
   },
+},
+
   {
     header: "Vouchers",
     cell: ({ row }) => {
