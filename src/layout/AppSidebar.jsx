@@ -26,9 +26,25 @@ const navItems = [
     name: "Dashboard",
     path: "/",
   },
+ 
+  {
+    icon: <UserIcon />,
+    name: "Users",
+    path: "/users",
+  },
+
+ 
+];
+const cmsItems = [
+
   {
     icon: <BookMarkIcon />,
-    name: "Category",
+    name: "Experience Bliss Living",
+    path: "/experience-bliss-living",
+  },
+  {
+    icon: <BookMarkIcon />,
+    name: "Membership Category",
     path: "/categories",
   },
   {
@@ -37,12 +53,7 @@ const navItems = [
     path: "/updates",
   },
   
-  {
-    icon: <UserIcon />,
-    name: "Users",
-    path: "/users",
-  },
-
+ 
  
 ];
 
@@ -326,6 +337,22 @@ const AppSidebar = () => {
                 )}
               </h2>
               {renderMenuItems(navItems, "main")}
+            </div>
+            <div>
+              <h2
+                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
+                  !isExpanded && !isHovered
+                    ? "lg:justify-center"
+                    : "justify-start"
+                }`}
+              >
+                {isExpanded || isHovered || isMobileOpen ? (
+                  "CMS"
+                ) : (
+                  <HorizontaLDots className="size-6" />
+                )}
+              </h2>
+              {renderMenuItems(cmsItems, "cms")}
             </div>
             <div className="">
               <h2

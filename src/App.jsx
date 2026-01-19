@@ -23,6 +23,7 @@ import SignIn from "./pages/AuthPages/SignIn";
 import PublicRoute from "./routes/PublicRoute";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Voucher from "./pages/vouchers/Voucher";
+import ExperienceStories from "./pages/stories/ExperienceStories";
 // import Button from "./components/ui/button/Button";
 
 export default function App() {
@@ -66,6 +67,7 @@ export default function App() {
 
               <Route path="/bookings" element={<Bookings />} />
               <Route path="/vouchers" element={<Voucher />} />
+              <Route path="/experience-bliss-living" element={<ExperienceStories />} />
             </Route>
           </Route>
 
