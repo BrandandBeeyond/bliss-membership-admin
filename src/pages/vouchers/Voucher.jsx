@@ -61,8 +61,6 @@ const Voucher = () => {
 
   const handleVerify = async () => {
     try {
-
-
       setVerifying(true);
 
       const otpCode = otp.join("");
@@ -80,7 +78,6 @@ const Voucher = () => {
       };
 
       const res = await dispatch(verifyVoucherwithCode(payload));
-
 
       if (res?.success) {
         alert("Voucher Redeem request accepted !");
