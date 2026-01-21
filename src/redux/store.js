@@ -10,6 +10,7 @@ import storage from "redux-persist/lib/storage";
 import { MembershipBookingReducer } from "./reducers/MembershipBookingReducer";
 import { AdminAuthReducer } from "./reducers/AdminReducer";
 import { VoucherReducer } from "./reducers/VoucherReducer";
+import { experienceReducer } from "./reducers/CMSReducer";
 
 const persistConfig = {
   key: "root",
@@ -21,13 +22,14 @@ const rootReducer = combineReducers({
   bookings: MembershipBookingReducer,
   adminAuth: AdminAuthReducer,
   vouchers: VoucherReducer,
+  experienceStories: experienceReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 const store = createStore(
   persistedReducer,
-  composeWithDevTools(applyMiddleware(thunk))
+  composeWithDevTools(applyMiddleware(thunk)),
 );
 
 const persistor = persistStore(store);

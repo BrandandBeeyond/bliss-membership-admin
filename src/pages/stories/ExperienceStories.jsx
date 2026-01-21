@@ -1,12 +1,21 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PageMeta from "../../components/common/PageMeta";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
 import { Modal } from "../../components/ui/modal";
 import DataTable from "../../components/datatables/DataTable";
+import {
+  AddExperiencesStories,
+  getAllExperiences,
+  UpdateExperiences,
+} from "../../redux/actions/CMSAction";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import { BeatLoader } from "react-spinners";
 
 const ExperienceStories = () => {
-  const [stories, setStories] = useState([]);
+  const dispatch = useDispatch();
+  const { stories = [] } = useSelector((state) => state.experienceStories);
   const [isOpen, setIsOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -21,6 +30,14 @@ const ExperienceStories = () => {
 
   const [previewCover, setPreviewCover] = useState(null);
   const [previewStories, setPreviewStories] = useState([]);
+  const [existingStories, setExistingStories] = useState([]);
+
+  useEffect(() => {
+    dispatch(getAllExperiences());
+  }, [dispatch]);
+
+  console.log("all experiences stories", stories);
+
   const openAddModal = () => {
     setEditingId(null);
     setForm({
@@ -32,6 +49,21 @@ const ExperienceStories = () => {
     });
     setPreviewCover(null);
     setPreviewStories([]);
+    setIsOpen(true);
+  };
+  const openEditModal = (row) => {
+    setEditingId(row._id);
+    setForm({
+      title: row.title,
+      order: row.order,
+      isActive: row.isActive,
+      coverImage: null,
+      storyImages: [],
+    });
+
+    setExistingStories(row.stories || []);
+    setPreviewCover(row.coverImage.url);
+    setPreviewStories(row.stories.map((s) => s.image.url));
     setIsOpen(true);
   };
 
@@ -47,6 +79,7 @@ const ExperienceStories = () => {
 
   const handleCoverSelect = (e) => {
     const file = e.target.files[0];
+
     if (!file) return;
 
     setForm((prev) => ({ ...prev, coverImage: file }));
@@ -57,7 +90,7 @@ const ExperienceStories = () => {
     const files = Array.from(e.target.files);
 
     if (files.length + previewStories.length > 5) {
-      toast.error("You can select max 5 images");
+      toast.error("you can select max 5 images");
       return;
     }
 
@@ -70,6 +103,41 @@ const ExperienceStories = () => {
     setPreviewStories((prev) => [...prev, ...newPreviews]);
   };
 
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+
+      const formData = new FormData();
+      formData.append("title", form.title);
+      formData.append("order", form.order);
+      formData.append("isActive", form.isActive);
+
+      if (form.coverImage) {
+        formData.append("coverImage", form.coverImage);
+      }
+
+      form.storyImages.forEach((img) => {
+        formData.append("stories", img);
+      });
+
+      if (editingId) {
+        await dispatch(UpdateExperiences(formData, editingId));
+        toast.success("Experience story updated successfully");
+      } else {
+        await dispatch(AddExperiencesStories(formData));
+        toast.success("Experience story added successfully");
+      }
+
+      closeModal();
+    } catch (error) {
+      toast.error(
+        error?.response?.data?.message || "Failed to save experience story",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const experienceColumns = [
     {
       header: "Title",
@@ -80,8 +148,43 @@ const ExperienceStories = () => {
       accessorKey: "order",
     },
     {
+      header: "Cover",
+      cell: ({ row }) => {
+        const url = row.original?.coverImage?.url;
+        return url ? (
+          <img src={url} className="w-16 h-12 object-cover rounded" />
+        ) : (
+          "—"
+        );
+      },
+    },
+    {
+      header: "Stories",
+      cell: ({ row }) => {
+        const stories = row.original?.stories || [];
+        return stories.length ? (
+          <div className="flex gap-1 flex-wrap">
+            {stories.map((s, i) => (
+              <img
+                key={i}
+                src={s.image.url}
+                className="w-10 h-10 object-cover rounded"
+              />
+            ))}
+          </div>
+        ) : (
+          "—"
+        );
+      },
+    },
+    {
       header: "Status",
-      cell: ({ row }) => (row.original.isActive ? "Active" : "Inactive"),
+      cell: ({ row }) =>
+        row.original.isActive ? (
+          <span className="text-green-600 font-medium">Active</span>
+        ) : (
+          <span className="text-red-500 font-medium">Inactive</span>
+        ),
     },
     {
       header: "Action",
@@ -104,17 +207,15 @@ const ExperienceStories = () => {
       />
       <PageBreadcrumb pageTitle="Experience Stories" />
       <div className="space-y-6">
-        <ComponentCard
-          title="Experience Stories Table"
-          action={
+        <ComponentCard>
+          <div className="flex justify-between items-center mb-4">
             <button
               className="bg-green-600 text-white px-4 py-2 rounded"
               onClick={openAddModal}
             >
               + Add New
             </button>
-          }
-        >
+          </div>
           <DataTable data={stories} columns={experienceColumns} />
         </ComponentCard>
       </div>
@@ -130,7 +231,7 @@ const ExperienceStories = () => {
             placeholder="Story Title"
             value={form.title}
             onChange={handleChange}
-            className="w-full p-2 text-black rounded"
+            className="w-full border rounded px-3 py-2 mb-4"
           />
 
           <input
@@ -139,7 +240,7 @@ const ExperienceStories = () => {
             placeholder="Order"
             value={form.order}
             onChange={handleChange}
-            className="w-full p-2 text-black rounded"
+            className="w-full border rounded px-3 py-2 mb-4"
           />
 
           <div className="flex items-center gap-2">
@@ -155,7 +256,12 @@ const ExperienceStories = () => {
           {/* COVER IMAGE */}
           <div>
             <label className="block mb-1">Cover Image</label>
-            <input type="file" accept="image/*" onChange={handleCoverSelect} />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleCoverSelect}
+              className="w-full border rounded px-3 py-2 mb-4"
+            />
             {previewCover && (
               <img
                 src={previewCover}
@@ -171,6 +277,7 @@ const ExperienceStories = () => {
               type="file"
               multiple
               accept="image/*"
+              className="w-full border rounded px-3 py-2 mb-4"
               onChange={handleStorySelect}
             />
 
@@ -187,7 +294,9 @@ const ExperienceStories = () => {
 
           <button
             className="bg-blue-600 text-white w-full py-2 rounded"
-           
+            loading={loading}
+            disabled={loading}
+            onClick={handleSubmit}
           >
             {loading ? <BeatLoader size={8} color="#fff" /> : "Save"}
           </button>

@@ -24,13 +24,25 @@ import PublicRoute from "./routes/PublicRoute";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Voucher from "./pages/vouchers/Voucher";
 import ExperienceStories from "./pages/stories/ExperienceStories";
+import { ToastContainer } from "react-toastify";
 // import Button from "./components/ui/button/Button";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function App() {
   return (
     <>
       <Router>
         <ScrollToTop />
+         <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          pauseOnHover
+          draggable
+          theme="dark"
+        />
         <Routes>
           {/* Dashboard Layout */}
 
