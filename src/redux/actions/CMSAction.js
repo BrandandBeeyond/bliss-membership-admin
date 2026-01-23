@@ -3,6 +3,7 @@ import {
   ADD_EXPERIENCE_STORIES_FAILURE,
   ADD_EXPERIENCE_STORIES_REQUEST,
   ADD_EXPERIENCE_STORIES_SUCCESS,
+  GET_ALL_EXPERIENCES_FAILURE,
   GET_ALL_EXPERIENCES_REQUEST,
   GET_ALL_EXPERIENCES_SUCCESS,
   UPDATE_EXPERIENCE_STORIES_FAILURE,
@@ -58,7 +59,7 @@ export const getAllExperiences = () => async (dispatch) => {
     return data;
   } catch (error) {
     dispatch({
-      type: GET_ADMIN_DETAILS_FAILURE,
+      type: GET_ALL_EXPERIENCES_FAILURE,
       payload: error.response?.data?.message || error.message,
     });
     console.log(
