@@ -24,6 +24,7 @@ export const experienceReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: true,
+        error: null,
       };
 
     case ADD_EXPERIENCE_STORIES_SUCCESS:

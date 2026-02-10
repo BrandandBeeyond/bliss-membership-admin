@@ -12,6 +12,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { BeatLoader } from "react-spinners";
+import { createEmptyCategory } from "../../utils/experienceFactories";
 
 const ExperienceStories = () => {
   const dispatch = useDispatch();
@@ -22,10 +23,12 @@ const ExperienceStories = () => {
 
   const [form, setForm] = useState({
     title: "",
+    overviewText: "",
     order: 0,
     isActive: true,
     coverImage: null,
     storyImages: [],
+    includedCategories: [],
   });
 
   const [previewCover, setPreviewCover] = useState(null);
@@ -38,32 +41,84 @@ const ExperienceStories = () => {
 
   console.log("all experiences stories", stories);
 
+  const addCategory = () => {
+    setForm((prev) => ({
+      ...prev,
+      includedCategories: [...prev.includedCategories, createEmptyCategory()],
+    }));
+  };
+
+  const addItem = (CIndex) => {
+    setForm((prev) => ({
+      ...prev,
+      includedCategories: prev.includedCategories.map((cat, i) =>
+        i === CIndex
+          ? { ...cat, items: [...cat.items, createEmptyItem()] }
+          : cat,
+      ),
+    }));
+  };
+
+  const updateCategoryField = (cIndex, field, value) => {
+    setForm((prev) => ({
+      ...prev,
+      includedCategories: prev.includedCategories.map((cat, i) =>
+        i === cIndex ? { ...cat, [field]: value } : cat,
+      ),
+    }));
+  };
+
+  const updateItemField = (cIndex, iIndex, field, value) => {
+    setForm((prev) => ({
+      ...prev,
+      includedCategories: prev.includedCategories.map((cat, i) =>
+        i === cIndex
+          ? {
+              ...cat,
+              items: cat.items.map((item, j) =>
+                j === iIndex ? { ...item, [field]: value } : item,
+              ),
+            }
+          : cat,
+      ),
+    }));
+  };
   const openAddModal = () => {
     setEditingId(null);
     setForm({
       title: "",
+      overviewText: "",
       order: 0,
       isActive: true,
       coverImage: null,
       storyImages: [],
+      includedCategories: [], // ✅ REQUIRED
     });
     setPreviewCover(null);
     setPreviewStories([]);
     setIsOpen(true);
   };
+
   const openEditModal = (row) => {
     setEditingId(row._id);
     setForm({
-      title: row.title,
-      order: row.order,
-      isActive: row.isActive,
+      title: row.title || "",
+      overviewText: row.overviewText || "",
+      order: row.order || 0,
+      isActive: row.isActive ?? true,
       coverImage: null,
       storyImages: [],
+      includedCategories:
+        row.includedCategories?.map((cat) => ({
+          categoryKey: cat.categoryKey || "",
+          overviewText: cat.overviewText || "",
+          items: cat.items || [],
+        })) || [],
     });
 
     setExistingStories(row.stories || []);
-    setPreviewCover(row.coverImage.url);
-    setPreviewStories(row.stories.map((s) => s.image.url));
+    setPreviewCover(row.coverImage?.url || null);
+    setPreviewStories(row.stories?.map((s) => s.image.url) || []);
     setIsOpen(true);
   };
 
@@ -107,31 +162,20 @@ const ExperienceStories = () => {
     try {
       setLoading(true);
 
-      const formData = new FormData();
-      formData.append("title", form.title);
-      formData.append("order", form.order);
-      formData.append("isActive", form.isActive);
-
-      if (form.coverImage) {
-        formData.append("coverImage", form.coverImage);
-      }
-
-      form.storyImages.forEach((img) => {
-        formData.append("stories", img);
-      });
+      const formData = buildExperienceFormData(form);
 
       if (editingId) {
         await dispatch(UpdateExperiences(formData, editingId));
-        toast.success("Experience story updated successfully");
+        toast.success("Experience updated successfully");
       } else {
         await dispatch(AddExperiencesStories(formData));
         toast.success("Experience story added successfully");
       }
 
       closeModal();
-    } catch (error) {
+    } catch (err) {
       toast.error(
-        error?.response?.data?.message || "Failed to save experience story",
+        err?.response?.data?.message || "Failed to save experience story",
       );
     } finally {
       setLoading(false);
@@ -221,7 +265,7 @@ const ExperienceStories = () => {
       </div>
 
       <Modal isOpen={isOpen} onClose={closeModal}>
-        <div className="p-5 text-white space-y-4 w-[450px]">
+        <div className="p-6 text-white space-y-4 max-w-[1000px] max-h-[85vh] overflow-y-auto">
           <h2 className="text-xl font-semibold text-center">
             {editingId ? "Edit Experience" : "Add Experience"}
           </h2>
@@ -230,6 +274,13 @@ const ExperienceStories = () => {
             name="title"
             placeholder="Story Title"
             value={form.title}
+            onChange={handleChange}
+            className="w-full border rounded px-3 py-2 mb-4"
+          />
+          <input
+            name="overviewText"
+            placeholder="Experience overview (mandatory)"
+            value={form.overviewText}
             onChange={handleChange}
             className="w-full border rounded px-3 py-2 mb-4"
           />
@@ -290,6 +341,106 @@ const ExperienceStories = () => {
                 />
               ))}
             </div>
+          </div>
+
+          {/* INCLUDED CATEGORIES */}
+          <div className="border-t pt-4">
+            <h3 className="text-lg font-semibold mb-3">Included Categories</h3>
+
+            {form.includedCategories.map((cat, cIndex) => (
+              <div key={cIndex} className="border p-3 rounded mb-4">
+                <input
+                  placeholder="Category Key (eg: villas, cottages)"
+                  value={cat.categoryKey}
+                  onChange={(e) =>
+                    updateCategoryField(cIndex, "categoryKey", e.target.value)
+                  }
+                  className="w-full border rounded px-3 py-2 mb-2"
+                />
+
+                <textarea
+                  placeholder="Category Overview"
+                  value={cat.overviewText}
+                  onChange={(e) =>
+                    updateCategoryField(cIndex, "overviewText", e.target.value)
+                  }
+                  className="w-full border rounded px-3 py-2 mb-3"
+                />
+
+                {/* ITEMS */}
+                {cat.items.map((item, iIndex) => (
+                  <div key={iIndex} className=" p-3 rounded mb-3">
+                    <input
+                      placeholder="Item Title"
+                      value={item.title}
+                      onChange={(e) =>
+                        updateItemField(cIndex, iIndex, "title", e.target.value)
+                      }
+                      className="w-full border rounded px-3 py-2 mb-2"
+                    />
+
+                    <textarea
+                      placeholder="Item Description"
+                      value={item.description}
+                      onChange={(e) =>
+                        updateItemField(
+                          cIndex,
+                          iIndex,
+                          "description",
+                          e.target.value,
+                        )
+                      }
+                      className="w-full border rounded px-3 py-2 mb-2"
+                    />
+
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) =>
+                        updateItemField(
+                          cIndex,
+                          iIndex,
+                          "image",
+                          e.target.files[0],
+                        )
+                      }
+                      className="w-full border rounded px-3 py-2 mb-2"
+                    />
+
+                    <input
+                      placeholder="Amenities (comma separated)"
+                      onChange={(e) =>
+                        updateItemField(
+                          cIndex,
+                          iIndex,
+                          "amenities",
+                          e.target.value
+                            .split(",")
+                            .map((a) => ({ title: a.trim() })),
+                        )
+                      }
+                      className="w-full border rounded px-3 py-2"
+                    />
+                  </div>
+                ))}
+
+                <button
+                  type="button"
+                  className="text-sm bg-gray-700 text-white px-3 py-1 rounded"
+                  onClick={() => addItem(cIndex)}
+                >
+                  + Add Item
+                </button>
+              </div>
+            ))}
+
+            <button
+              type="button"
+              className="bg-green-700 text-white px-4 py-2 rounded"
+              onClick={addCategory}
+            >
+              + Add Category
+            </button>
           </div>
 
           <button

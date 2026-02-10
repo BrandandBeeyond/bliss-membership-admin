@@ -74,7 +74,7 @@ export const UpdateExperiences = (formData, id) => async (dispatch) => {
   try {
     dispatch({ type: UPDATE_EXPERIENCE_STORIES_REQUEST });
 
-    const admintoken = localStorage.get("adminToken");
+    const admintoken = localStorage.getItem("adminToken");
 
     const { data } = await axios.put(
       `${API_SERVER}/experiencestory/update/${id}`,
