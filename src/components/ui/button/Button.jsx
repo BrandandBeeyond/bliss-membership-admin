@@ -4,9 +4,9 @@ const Button = ({
   children,
   size = "md",
   variant = "primary",
-  startIcon,
-  endIcon,
-  onClick,
+  startIcon = null,
+  endIcon = null,
+  onClick = undefined,
   className = "",
   disabled = false,
 }) => {
