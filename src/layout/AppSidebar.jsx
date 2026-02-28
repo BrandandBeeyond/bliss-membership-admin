@@ -64,6 +64,7 @@ const othersItems = [
     name: "Bookings",
     subItems: [
       { name: "All bookings", path: "/bookings", pro: false },
+      { name: "Offline bookings", path: "/offline-bookings", pro: false },
       { name: "User arrivals", path: "/user-arrivals", pro: false },
       { name: "Vouchers", path: "/vouchers", pro: false },
       { name: "Customers", path: "/customers", pro: false },

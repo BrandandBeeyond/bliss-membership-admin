@@ -19,6 +19,7 @@ import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
 import BasicTables from "./pages/Tables/BasicTables";
 import Bookings from "./pages/bookings/Bookings";
+import OfflineBookings from "./pages/bookings/OfflineBookings";
 import SignIn from "./pages/AuthPages/SignIn";
 import PublicRoute from "./routes/PublicRoute";
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -78,6 +79,7 @@ export default function App() {
               <Route path="/bar-chart" element={<BarChart />} />
 
               <Route path="/bookings" element={<Bookings />} />
+              <Route path="/offline-bookings" element={<OfflineBookings />} />
               <Route path="/vouchers" element={<Voucher />} />
               <Route path="/experience-bliss-living" element={<ExperienceStories />} />
             </Route>
