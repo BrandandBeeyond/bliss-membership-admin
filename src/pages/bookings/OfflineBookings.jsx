@@ -123,7 +123,7 @@ const OfflineBookings = () => {
           phone: formData.phone,
         },
         arrivalDate: formData.arrivalDate || undefined,
-        arrivalStatus: "Approved",
+        arrivalStatus: "NotRequested",
         paymentStatus: "Completed",
       };
 
