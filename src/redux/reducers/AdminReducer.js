@@ -32,12 +32,20 @@ export const AdminAuthReducer = (state = initialState, action) => {
       };
 
     case ADMIN_LOGIN_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        admin: action.payload,
+        token: action.payload?.token || state.token,
+        isAuthenticated: true,
+        error: null,
+      };
+
     case GET_ADMIN_DETAILS_SUCCESS:
       return {
         ...state,
         loading: false,
         admin: action.payload,
-        token: action.payload,
         isAuthenticated: true,
         error: null,
       };

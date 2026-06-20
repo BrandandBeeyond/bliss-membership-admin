@@ -23,8 +23,10 @@ import OfflineBookings from "./pages/bookings/OfflineBookings";
 import SignIn from "./pages/AuthPages/SignIn";
 import PublicRoute from "./routes/PublicRoute";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import SuperAdminRoute from "./routes/SuperAdminRoute";
 import Voucher from "./pages/vouchers/Voucher";
 import ExperienceStories from "./pages/stories/ExperienceStories";
+import Admins from "./pages/Admins/Admins";
 import { ToastContainer } from "react-toastify";
 // import Button from "./components/ui/button/Button";
 import "react-toastify/dist/ReactToastify.css";
@@ -54,6 +56,10 @@ export default function App() {
           <Route element={<ProtectedRoute />}>
             <Route element={<AppLayout />}>
               <Route index path="/" element={<Home />} />
+
+              <Route element={<SuperAdminRoute />}>
+                <Route path="/admins" element={<Admins />} />
+              </Route>
 
               {/* Others Page */}
               <Route path="/profile" element={<UserProfiles />} />

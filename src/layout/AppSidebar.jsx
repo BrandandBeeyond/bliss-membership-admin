@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
+import { useSelector } from "react-redux";
 
 // Assume these icons are imported from an icon library
 import {
@@ -32,9 +33,13 @@ const navItems = [
     name: "Users",
     path: "/users",
   },
-
- 
 ];
+
+const superAdminNavItem = {
+  icon: <UserCircleIcon />,
+  name: "Admins",
+  path: "/admins",
+};
 const cmsItems = [
 
   {
@@ -88,11 +93,16 @@ const othersItems = [
 
 const AppSidebar = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
+  const { admin } = useSelector((state) => state.adminAuth);
   const location = useLocation();
 
   const [openSubmenu, setOpenSubmenu] = useState(null);
   const [subMenuHeight, setSubMenuHeight] = useState({});
   const subMenuRefs = useRef({});
+  const mainMenuItems =
+    admin?.role === "SUPER_ADMIN"
+      ? [...navItems, superAdminNavItem]
+      : navItems;
 
   // const isActive = (path: string) => location.pathname === path;
   const isActive = useCallback(
@@ -337,7 +347,7 @@ const AppSidebar = () => {
                   <HorizontaLDots className="size-6" />
                 )}
               </h2>
-              {renderMenuItems(navItems, "main")}
+              {renderMenuItems(mainMenuItems, "main")}
             </div>
             <div>
               <h2

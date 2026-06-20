@@ -23,11 +23,18 @@ export const AdminLogin = (payload) => async (dispatch) => {
 
     localStorage.setItem("adminToken", data.token);
     localStorage.setItem("adminInfo", JSON.stringify(data.admin));
+
+    return data;
   } catch (error) {
     dispatch({
       type: ADMIN_LOGIN_FAILURE,
       payload: error.response?.data?.message || error.message,
     });
+
+    return {
+      success: false,
+      message: error.response?.data?.message || error.message,
+    };
   }
 };
 
@@ -46,11 +53,15 @@ export const getAdminDetails = () => async (dispatch) => {
       type: GET_ADMIN_DETAILS_SUCCESS,
       payload: data.admin,
     });
+
+    return data.admin;
   } catch (error) {
     dispatch({
       type: GET_ADMIN_DETAILS_FAILURE,
       payload: error.response?.data?.message || error.message,
     });
+
+    return null;
   }
 };
 
@@ -59,4 +70,28 @@ export const AdminLogout = () => async (dispatch) => {
   localStorage.removeItem("adminInfo");
 
   dispatch({ type: ADMIN_LOGOUT });
+
+  return { success: true };
+};
+
+export const createAdminAccount = (payload) => async () => {
+  const token = localStorage.getItem("adminToken");
+  const { data } = await axios.post(`${API_SERVER}/admin/create-admin`, payload, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return data;
+};
+
+export const getAdminAccounts = () => async () => {
+  const token = localStorage.getItem("adminToken");
+  const { data } = await axios.get(`${API_SERVER}/admin/admins`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return data;
 };
