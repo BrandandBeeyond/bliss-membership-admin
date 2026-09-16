@@ -11,12 +11,15 @@ import { Modal } from "../../components/ui/modal";
 import {
   createAdminAccount,
   getAdminAccounts,
+  updateAdminAccount,
+  deleteAdminAccount,
 } from "../../redux/actions/AdminAction";
 
 const emptyForm = {
   name: "",
   email: "",
   password: "",
+  isActive: true,
 };
 
 const formatDate = (value) => {
@@ -32,6 +35,8 @@ export default function Admins() {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState(emptyForm);
+  const [editingAdmin, setEditingAdmin] = useState(null);
+  const [deletingAdmin, setDeletingAdmin] = useState(null);
 
   const loadAdmins = async () => {
     try {
@@ -50,11 +55,28 @@ export default function Admins() {
   }, []);
 
   const openModal = () => {
+    setEditingAdmin(null);
     setForm(emptyForm);
     setIsOpen(true);
   };
 
-  const closeModal = () => setIsOpen(false);
+  const closeModal = () => { if (!saving) setIsOpen(false); };
+  const openEdit = (admin) => {
+    setEditingAdmin(admin);
+    setForm({ name: admin.name || "", email: admin.email || "", password: "", isActive: admin.isActive });
+    setIsOpen(true);
+  };
+  const handleDelete = async () => {
+    if (saving || !deletingAdmin) return;
+    setSaving(true);
+    try {
+      await dispatch(deleteAdminAccount(deletingAdmin._id));
+      setAdmins((current) => current.filter((admin) => admin._id !== deletingAdmin._id));
+      setDeletingAdmin(null);
+      toast.success("Admin deleted successfully");
+    } catch (error) { toast.error(error?.response?.data?.message || "Failed to delete admin"); }
+    finally { setSaving(false); }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -65,6 +87,8 @@ export default function Admins() {
   };
 
   const handleSubmit = async () => {
+    if (saving) return;
+    if (!form.name.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) { toast.error("Enter a valid name and email"); return; }
     try {
       setSaving(true);
 
@@ -74,20 +98,25 @@ export default function Admins() {
         password: form.password,
       };
 
-      const data = await dispatch(createAdminAccount(payload));
+      if (editingAdmin) { payload.isActive = form.isActive; if (!payload.password) delete payload.password; }
+      const data = await dispatch(editingAdmin ? updateAdminAccount(editingAdmin._id, payload) : createAdminAccount(payload));
 
       toast.success(data?.message || "Admin account created successfully");
-      closeModal();
+      setIsOpen(false);
       setForm(emptyForm);
       await loadAdmins();
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Failed to create admin");
+      toast.error(error?.response?.data?.message || "Failed to save admin");
     } finally {
       setSaving(false);
     }
   };
 
   const columns = [
+    { header: "Actions", cell: ({ row }) => <div className="flex gap-2">
+      <Button size="sm" variant="outline" disabled={saving} onClick={() => openEdit(row.original)}>Edit</Button>
+      <button type="button" disabled={saving} onClick={() => setDeletingAdmin(row.original)} className="rounded border border-red-200 px-3 py-2 text-sm text-red-600 hover:bg-red-50 disabled:opacity-50">Delete</button>
+    </div> },
     {
       header: "Name",
       accessorKey: "name",
@@ -161,10 +190,10 @@ export default function Admins() {
         <div className="space-y-5">
           <div>
             <h2 className="text-xl font-semibold text-gray-800 dark:text-white/90">
-              Create Admin
+              {editingAdmin ? "Edit Admin" : "Create Admin"}
             </h2>
             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              This account will be created as an admin with dashboard access.
+              {editingAdmin ? "Update account details. Leave password blank to keep the current password." : "This account will be created as an admin with dashboard access."}
             </p>
           </div>
 
@@ -205,12 +234,14 @@ export default function Admins() {
                 type="password"
                 value={form.password}
                 onChange={handleChange}
-                placeholder="Enter password"
+                placeholder={editingAdmin ? "Leave blank to keep current password" : "Enter password"}
+                autoComplete="new-password"
                 className="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-3 text-sm outline-none transition focus:border-brand-500"
               />
             </div>
           </div>
 
+          {editingAdmin && <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.isActive} onChange={(event) => setForm((current) => ({ ...current, isActive: event.target.checked }))} />Active account</label>}
           <div className="flex items-center justify-end gap-3 pt-2">
             <Button variant="outline" onClick={closeModal}>
               Cancel
@@ -218,12 +249,17 @@ export default function Admins() {
             <Button
               variant="theme"
               onClick={handleSubmit}
-              disabled={saving || !form.name || !form.email || !form.password}
+              disabled={saving || !form.name.trim() || !form.email.trim() || (!editingAdmin && !form.password)}
             >
-              {saving ? <BeatLoader size={8} color="#fff" /> : "Create"}
+              {saving ? <BeatLoader size={8} color="#fff" /> : editingAdmin ? "Save changes" : "Create"}
             </Button>
           </div>
         </div>
+      </Modal>
+      <Modal isOpen={Boolean(deletingAdmin)} onClose={() => { if (!saving) setDeletingAdmin(null); }}>
+        <h2 className="text-xl font-semibold">Delete admin?</h2>
+        <p className="mt-3 text-sm">Delete {deletingAdmin?.name} ({deletingAdmin?.email})? This removes their dashboard access. Existing booking records will remain.</p>
+        <div className="mt-6 flex justify-end gap-3"><Button variant="outline" disabled={saving} onClick={() => setDeletingAdmin(null)}>Cancel</Button><button type="button" disabled={saving} onClick={handleDelete} className="rounded bg-red-600 px-4 py-2 text-white disabled:opacity-50">{saving ? "Deleting..." : "Delete admin"}</button></div>
       </Modal>
     </>
   );

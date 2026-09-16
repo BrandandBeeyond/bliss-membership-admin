@@ -24,6 +24,7 @@ import SignIn from "./pages/AuthPages/SignIn";
 import PublicRoute from "./routes/PublicRoute";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import SuperAdminRoute from "./routes/SuperAdminRoute";
+import AdminBookingsRoute from "./routes/AdminBookingsRoute";
 import Voucher from "./pages/vouchers/Voucher";
 import ExperienceStories from "./pages/stories/ExperienceStories";
 import Admins from "./pages/Admins/Admins";
@@ -102,3 +103,5 @@ export default function App() {
     </>
   );
 }
+
+

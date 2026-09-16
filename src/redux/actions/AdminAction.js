@@ -95,3 +95,15 @@ export const getAdminAccounts = () => async () => {
 
   return data;
 };
+
+export const updateAdminAccount = (id, payload) => async () => {
+  const token = localStorage.getItem("adminToken");
+  const { data } = await axios.put(API_SERVER + "/admin/admins/" + id, payload, { headers: { Authorization: "Bearer " + token } });
+  return data;
+};
+
+export const deleteAdminAccount = (id) => async () => {
+  const token = localStorage.getItem("adminToken");
+  const { data } = await axios.delete(API_SERVER + "/admin/admins/" + id, { headers: { Authorization: "Bearer " + token } });
+  return data;
+};

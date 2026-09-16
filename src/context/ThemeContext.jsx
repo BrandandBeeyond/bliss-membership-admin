@@ -1,37 +1,21 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
+import React, { createContext, useContext, useEffect } from "react";
 
 const ThemeContext = createContext(undefined);
 
 export const ThemeProvider = ({ children }) => {
-  const [theme, setTheme] = useState("light");
-  const [isInitialized, setIsInitialized] = useState(false);
-
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme");
-    const initialTheme = savedTheme || "light";
-
-    setTheme(initialTheme);
-    setIsInitialized(true);
+    // Keep the app permanently in light mode.
+    localStorage.setItem("theme", "light");
+    document.documentElement.classList.remove("dark");
   }, []);
 
-  useEffect(() => {
-    if (!isInitialized) return;
-
-    localStorage.setItem("theme", theme);
-
-    if (theme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [theme, isInitialized]);
-
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "light" ? "dark" : "light"));
-  };
-
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider
+      value={{
+        theme: "light",
+        toggleTheme: () => {},
+      }}
+    >
       {children}
     </ThemeContext.Provider>
   );

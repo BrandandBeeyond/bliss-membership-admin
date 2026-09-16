@@ -2,21 +2,29 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
 import { useSelector } from "react-redux";
 
-// Assume these icons are imported from an icon library
+// Sidebar icons use the shared SVG library.
 import {
-  BookMarkIcon,
-  BoxCubeIcon,
+  AlertIcon,
+  ArrowRightIcon,
+  BoltIcon,
   CalenderIcon,
+  CheckCircleIcon,
   ChevronDownIcon,
+  DocsIcon,
+  DollarLineIcon,
+  FolderIcon,
   GridIcon,
+  GroupIcon,
   HorizontaLDots,
   ListIcon,
+  LockIcon,
   PageIcon,
-  PieChartIcon,
+  PencilIcon,
   PlugInIcon,
-  TableIcon,
+  ShootingStarIcon,
   UserCircleIcon,
   UserIcon,
+  VideoIcon,
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
 import SidebarWidget from "./SidebarWidget";
@@ -27,33 +35,27 @@ const navItems = [
     name: "Dashboard",
     path: "/",
   },
- 
-  {
-    icon: <UserIcon />,
-    name: "Users",
-    path: "/users",
-  },
 ];
 
 const superAdminNavItem = {
-  icon: <UserCircleIcon />,
+  icon: <LockIcon />,
   name: "Admins",
   path: "/admins",
 };
 const cmsItems = [
 
   {
-    icon: <BookMarkIcon />,
+    icon: <ShootingStarIcon />,
     name: "Experience Bliss Living",
     path: "/experience-bliss-living",
   },
   {
-    icon: <BookMarkIcon />,
+    icon: <FolderIcon />,
     name: "Membership Category",
     path: "/categories",
   },
   {
-    icon: <BookMarkIcon />,
+    icon: <DocsIcon />,
     name: "Updates",
     path: "/updates",
   },
@@ -65,27 +67,27 @@ const cmsItems = [
 const othersItems = [
  
   {
-    icon: <BoxCubeIcon />,
+    icon: <CalenderIcon />,
     name: "Bookings",
     subItems: [
-      { name: "All bookings", path: "/bookings", pro: false },
-      { name: "Offline bookings", path: "/offline-bookings", pro: false },
-      { name: "User arrivals", path: "/user-arrivals", pro: false },
-      { name: "Vouchers", path: "/vouchers", pro: false },
-      { name: "Customers", path: "/customers", pro: false },
+      { icon: <ListIcon />, name: "All bookings", path: "/bookings", pro: false },
+      { icon: <PencilIcon />, name: "Offline bookings", path: "/offline-bookings", pro: false },
+      { icon: <ArrowRightIcon />, name: "User arrivals", path: "/user-arrivals", pro: false },
+      { icon: <DollarLineIcon />, name: "Vouchers", path: "/vouchers", pro: false },
+      { icon: <UserCircleIcon />, name: "Customers", path: "/customers", pro: false },
       
     ],
   },
   {
-    icon: <BoxCubeIcon />,
+    icon: <PlugInIcon />,
     name: "UI Elements",
     subItems: [
-      { name: "Alerts", path: "/alerts", pro: false },
-      { name: "Avatar", path: "/avatars", pro: false },
-      { name: "Badge", path: "/badge", pro: false },
-      { name: "Buttons", path: "/buttons", pro: false },
-      { name: "Images", path: "/basic-tables", pro: false },
-      { name: "Videos", path: "/videos", pro: false },
+      { icon: <AlertIcon />, name: "Alerts", path: "/alerts", pro: false },
+      { icon: <UserIcon />, name: "Avatar", path: "/avatars", pro: false },
+      { icon: <CheckCircleIcon />, name: "Badge", path: "/badge", pro: false },
+      { icon: <BoltIcon />, name: "Buttons", path: "/buttons", pro: false },
+      { icon: <PageIcon />, name: "Images", path: "/basic-tables", pro: false },
+      { icon: <VideoIcon />, name: "Videos", path: "/videos", pro: false },
     ],
   },
  
@@ -104,6 +106,8 @@ const AppSidebar = () => {
       ? [...navItems, superAdminNavItem]
       : navItems;
 
+  const isSuperAdmin = admin?.role === "SUPER_ADMIN";
+  const bookingMenuItems = isSuperAdmin ? othersItems : [othersItems[0]];
   // const isActive = (path: string) => location.pathname === path;
   const isActive = useCallback(
     (path) => location.pathname === path,
@@ -113,7 +117,7 @@ const AppSidebar = () => {
   useEffect(() => {
     let submenuMatched = false;
     ["main", "others"].forEach((menuType) => {
-      const items = menuType === "main" ? navItems : othersItems;
+      const items = menuType === "main" ? mainMenuItems : bookingMenuItems;
       items.forEach((nav, index) => {
         if (nav.subItems) {
           nav.subItems.forEach((subItem) => {
@@ -246,6 +250,9 @@ const AppSidebar = () => {
                           : "menu-dropdown-item-inactive"
                       }`}
                     >
+                      <span aria-hidden="true" className="inline-flex h-5 w-5 shrink-0 items-center justify-center [&>svg]:h-5 [&>svg]:w-5">
+                        {subItem.icon}
+                      </span>
                       {subItem.name}
                       <span className="flex items-center gap-1 ml-auto">
                         {subItem.new && (
@@ -363,7 +370,7 @@ const AppSidebar = () => {
                   <HorizontaLDots className="size-6" />
                 )}
               </h2>
-              {renderMenuItems(cmsItems, "cms")}
+              {isSuperAdmin && renderMenuItems(cmsItems, "cms")}
             </div>
             <div className="">
               <h2
@@ -379,7 +386,7 @@ const AppSidebar = () => {
                   <HorizontaLDots />
                 )}
               </h2>
-              {renderMenuItems(othersItems, "others")}
+              {renderMenuItems(bookingMenuItems, "others")}
             </div>
           </div>
         </nav>
@@ -390,3 +397,4 @@ const AppSidebar = () => {
 };
 
 export default AppSidebar;
+

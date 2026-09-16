@@ -15,7 +15,7 @@ export const getAllBookings = () => async (dispatch) => {
   try {
     dispatch({ type: GET_ALL_BOOKED_MEMBERSHIPS_REQUEST });
 
-    const { data } = await axios.get(`${API_SERVER}/bookings/allbookings`);
+    const { data } = await axios.get(`${API_SERVER}/bookings/allbookings`, { headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` } });
 
     dispatch({
       type: GET_ALL_BOOKED_MEMBERSHIPS_SUCCESS,
@@ -87,14 +87,14 @@ export const createOfflineBookingByAdmin = (payload) => async (dispatch) => {
         },
       },
     );
-    console.log("[OfflineBooking][Action] create success response:", data);
+    // Claim codes are shown only to the issuing admin, never written to logs.
 
     dispatch({
       type: CREATE_OFFLINE_BOOKING_SUCCESS,
       payload: data.booking,
     });
 
-    return data.booking;
+    return { booking: data.booking, claimCode: data.claimCode };
   } catch (error) {
     console.error("[OfflineBooking][Action] create failed");
     console.error("[OfflineBooking][Action] status:", error?.response?.status);
@@ -107,3 +107,21 @@ export const createOfflineBookingByAdmin = (payload) => async (dispatch) => {
     throw error;
   }
 };
+
+export const generateOfflineClaimCode = (id) => async () => {
+  const token = localStorage.getItem("adminToken");
+  const { data } = await axios.post(API_SERVER + "/bookings/booking/offline/" + id + "/claim-code", {}, { headers: { Authorization: "Bearer " + token } });
+  return data;
+};
+
+export const deleteOfflineBooking = (id) => async (dispatch, getState) => {
+  const { data } = await axios.delete(API_SERVER + "/bookings/booking/offline/" + id, {
+    headers: { Authorization: "Bearer " + localStorage.getItem("adminToken") },
+  });
+  dispatch({ type: GET_ALL_BOOKED_MEMBERSHIPS_SUCCESS, payload: (getState().bookings.bookings || []).filter((booking) => booking._id !== id) });
+  return data;
+};
+
+export const revealOfflineClaimCode = (id) => async () => { const token = localStorage.getItem("adminToken"); const { data } = await axios.get(API_SERVER + "/bookings/booking/offline/" + id + "/claim-code", { headers: { Authorization: "Bearer " + token } }); return data; };
+
+
