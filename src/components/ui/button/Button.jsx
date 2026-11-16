@@ -9,6 +9,7 @@ const Button = ({
   onClick = undefined,
   className = "",
   disabled = false,
+  type = undefined,
 }) => {
   // Size Classes
   const sizeClasses = {
@@ -26,6 +27,10 @@ const Button = ({
     outline:
       "bg-white text-gray-700 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:ring-gray-700 dark:hover:bg-white/[0.03]",
   
+    danger:
+  
+      "bg-error-500 text-white shadow-theme-xs hover:bg-error-600 disabled:bg-error-300",
+  
     outlineDanger:
       "bg-white text-red-400 ring-1 ring-inset ring-gray-300 hover:bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:ring-red-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-300",
   };
@@ -37,6 +42,7 @@ const Button = ({
       } ${variantClasses[variant]} ${
         disabled ? "cursor-not-allowed opacity-50" : ""
       }`}
+      type={type}
       onClick={onClick}
       disabled={disabled}
     >

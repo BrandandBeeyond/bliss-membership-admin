@@ -1,17 +1,17 @@
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import React from "react";
 
-const DataTable = ({ data, columns }) => {
+const DataTable = ({ data, columns, tableClassName = "w-full table-fixed" }) => {
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
   return (
-    <div className="rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
+    <div className="max-w-full rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
       {/* Horizontal Scroll Wrapper */}
       <div className="overflow-x-auto">
-        <table className="w-full table-fixed">
+        <table className={tableClassName}>
           <thead className="border-b border-gray-100 dark:border-white/[0.05]">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>

@@ -125,3 +125,30 @@ export const deleteOfflineBooking = (id) => async (dispatch, getState) => {
 export const revealOfflineClaimCode = (id) => async () => { const token = localStorage.getItem("adminToken"); const { data } = await axios.get(API_SERVER + "/bookings/booking/offline/" + id + "/claim-code", { headers: { Authorization: "Bearer " + token } }); return data; };
 
 
+
+export const importOfflineBookings = (payload) => async (dispatch) => {
+  const { data } = await axios.post(API_SERVER + "/bookings/booking/offline/import", payload, {
+    headers: { Authorization: "Bearer " + localStorage.getItem("adminToken") },
+  });
+  await dispatch(getAllBookings());
+  return data;
+};
+
+// payload: { arrivalStatus: "Approved" | "Rejected", arrivalDate?, suggestedDates?, note? }
+export const reviewArrivalRequest = (bookingId, payload) => async (dispatch) => {
+  const { data } = await axios.put(API_SERVER + "/bookings/membership/" + bookingId + "/arrival", payload, {
+    headers: { Authorization: "Bearer " + localStorage.getItem("adminToken") },
+  });
+  await dispatch(getAllBookings());
+  return data;
+};
+
+// Membership bookings made on touchwoodbliss.com (separate website checkout),
+// proxied by the backend. Pass refresh=true to bypass its one-minute cache.
+export const fetchWebsiteBookings = async (refresh = false) => {
+  const { data } = await axios.get(API_SERVER + "/bookings/website-bookings", {
+    params: refresh ? { refresh: 1 } : undefined,
+    headers: { Authorization: "Bearer " + localStorage.getItem("adminToken") },
+  });
+  return data;
+};

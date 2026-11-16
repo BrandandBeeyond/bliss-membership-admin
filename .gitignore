@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Member data for one-off imports (contains phone numbers)
+import-data/

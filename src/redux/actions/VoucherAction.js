@@ -74,3 +74,13 @@ export const verifyVoucherwithCode = (payload) => async (dispatch) => {
     throw error;
   }
 };
+
+export const rejectVoucherRedemption = (redemptionId, reason) => async (dispatch) => {
+  const { data } = await axios.post(
+    `${API_SERVER}/vouchers/voucher/redeem/${redemptionId}/reject`,
+    { reason },
+    { headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` } },
+  );
+  await dispatch(getAllRequestedRedeemVouchers());
+  return data;
+};

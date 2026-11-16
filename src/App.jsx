@@ -1,12 +1,7 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router";
 
 import NotFound from "./pages/OtherPage/NotFound";
 import UserProfiles from "./pages/UserProfiles";
-import Videos from "./pages/UiElements/Videos";
-import Images from "./pages/UiElements/Images";
-import Alerts from "./pages/UiElements/Alerts";
-import Badges from "./pages/UiElements/Badges";
-import Avatars from "./pages/UiElements/Avatars";
 
 import LineChart from "./pages/Charts/LineChart";
 import BarChart from "./pages/Charts/BarChart";
@@ -17,9 +12,8 @@ import Blank from "./pages/Blank";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
-import BasicTables from "./pages/Tables/BasicTables";
 import Bookings from "./pages/bookings/Bookings";
-import OfflineBookings from "./pages/bookings/OfflineBookings";
+import UserArrivals from "./pages/bookings/UserArrivals";
 import SignIn from "./pages/AuthPages/SignIn";
 import PublicRoute from "./routes/PublicRoute";
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -70,23 +64,15 @@ export default function App() {
               {/* Forms */}
               <Route path="/form-elements" element={<FormElements />} />
 
-              {/* Tables */}
-              <Route path="/basic-tables" element={<BasicTables />} />
 
-              {/* Ui Elements */}
-              <Route path="/alerts" element={<Alerts />} />
-              <Route path="/avatars" element={<Avatars />} />
-              <Route path="/badge" element={<Badges />} />
-              {/* <Route path="/buttons" element={<Button />} /> */}
-              <Route path="/images" element={<Images />} />
-              <Route path="/videos" element={<Videos />} />
 
               {/* Charts */}
               <Route path="/line-chart" element={<LineChart />} />
               <Route path="/bar-chart" element={<BarChart />} />
 
               <Route path="/bookings" element={<Bookings />} />
-              <Route path="/offline-bookings" element={<OfflineBookings />} />
+              <Route path="/offline-bookings" element={<Navigate to="/bookings" replace />} />
+              <Route path="/user-arrivals" element={<UserArrivals />} />
               <Route path="/vouchers" element={<Voucher />} />
               <Route path="/experience-bliss-living" element={<ExperienceStories />} />
             </Route>

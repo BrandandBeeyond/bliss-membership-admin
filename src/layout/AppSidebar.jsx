@@ -4,11 +4,8 @@ import { useSelector } from "react-redux";
 
 // Sidebar icons use the shared SVG library.
 import {
-  AlertIcon,
   ArrowRightIcon,
-  BoltIcon,
   CalenderIcon,
-  CheckCircleIcon,
   ChevronDownIcon,
   DocsIcon,
   DollarLineIcon,
@@ -18,13 +15,8 @@ import {
   HorizontaLDots,
   ListIcon,
   LockIcon,
-  PageIcon,
-  PencilIcon,
-  PlugInIcon,
   ShootingStarIcon,
   UserCircleIcon,
-  UserIcon,
-  VideoIcon,
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
 import SidebarWidget from "./SidebarWidget";
@@ -70,24 +62,11 @@ const othersItems = [
     icon: <CalenderIcon />,
     name: "Bookings",
     subItems: [
-      { icon: <ListIcon />, name: "All bookings", path: "/bookings", pro: false },
-      { icon: <PencilIcon />, name: "Offline bookings", path: "/offline-bookings", pro: false },
+      { icon: <ListIcon />, name: "Bookings", path: "/bookings", pro: false },
       { icon: <ArrowRightIcon />, name: "User arrivals", path: "/user-arrivals", pro: false },
       { icon: <DollarLineIcon />, name: "Vouchers", path: "/vouchers", pro: false },
       { icon: <UserCircleIcon />, name: "Customers", path: "/customers", pro: false },
       
-    ],
-  },
-  {
-    icon: <PlugInIcon />,
-    name: "UI Elements",
-    subItems: [
-      { icon: <AlertIcon />, name: "Alerts", path: "/alerts", pro: false },
-      { icon: <UserIcon />, name: "Avatar", path: "/avatars", pro: false },
-      { icon: <CheckCircleIcon />, name: "Badge", path: "/badge", pro: false },
-      { icon: <BoltIcon />, name: "Buttons", path: "/buttons", pro: false },
-      { icon: <PageIcon />, name: "Images", path: "/basic-tables", pro: false },
-      { icon: <VideoIcon />, name: "Videos", path: "/videos", pro: false },
     ],
   },
  

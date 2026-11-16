@@ -5,6 +5,7 @@ import PageMeta from "../../components/common/PageMeta";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
 import { getAllBookings } from "../../redux/actions/MembershipAction";
+import MonthlyBookingsChart from "../../components/charts/MonthlyBookingsChart";
 
 const currency = new Intl.NumberFormat("en-IN", {
   style: "currency",
@@ -220,7 +221,7 @@ export default function Home() {
                 View bookings
               </Link>
               <Link
-                to="/offline-bookings"
+                to="/bookings"
                 className="inline-flex items-center rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-400"
               >
                 Create offline booking
@@ -259,6 +260,8 @@ export default function Home() {
             badge="R"
           />
         </div>
+
+        <MonthlyBookingsChart bookings={bookings} />
 
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
           <ComponentCard
@@ -300,7 +303,7 @@ export default function Home() {
           >
             <div className="space-y-3">
               <Link
-                to="/offline-bookings"
+                to="/bookings"
                 className="block rounded-2xl border border-gray-200 px-4 py-3 transition hover:border-emerald-300 hover:bg-emerald-50 dark:border-gray-800 dark:hover:bg-emerald-500/10"
               >
                 <p className="font-medium text-gray-800 dark:text-white">
@@ -311,7 +314,7 @@ export default function Home() {
                 </p>
               </Link>
               <Link
-                to="/bookings"
+                to="/bookings?tab=all"
                 className="block rounded-2xl border border-gray-200 px-4 py-3 transition hover:border-sky-300 hover:bg-sky-50 dark:border-gray-800 dark:hover:bg-sky-500/10"
               >
                 <p className="font-medium text-gray-800 dark:text-white">
