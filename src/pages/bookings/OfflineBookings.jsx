@@ -21,6 +21,7 @@ import { csvToImportRows } from "../../utils/offlineImportCsv";
 import { exportOfflineCsv, exportOfflineExcel, exportOfflinePdf } from "../../utils/offlineExport";
 import { Dropdown } from "../../components/ui/dropdown/Dropdown";
 import { DropdownItem } from "../../components/ui/dropdown/DropdownItem";
+import { EmptyState, matchesSearch } from "../../components/common/ListToolbar";
 
 const EMPTY_FORM = {
   fullname: "",
@@ -42,7 +43,8 @@ const formatDate = (value) => (value ? new Date(value).toLocaleDateString("en-GB
 
 // `embedded`: rendered as the Offline tab of the Bookings page, which owns the
 // page title and loads bookings itself.
-const OfflineBookings = ({ embedded = false }) => {
+// `search`: guest-name search text from the Bookings page search bar.
+const OfflineBookings = ({ embedded = false, search = "" }) => {
   const dispatch = useDispatch();
   const { bookings = [], creatingOffline = false } = useSelector(
     (state) => state.bookings,
@@ -288,6 +290,11 @@ const OfflineBookings = ({ embedded = false }) => {
     [bookings],
   );
 
+  const visibleOfflineBookings = useMemo(
+    () => offlineBookings.filter((b) => matchesSearch(search, b.memberDetails?.fullname, b.memberDetails?.phone, b.memberDetails?.email, b.membershipNumber)),
+    [offlineBookings, search],
+  );
+
   const offlineColumns = useMemo(
     () => {
       const money = (value) => "Rs." + Number(value ?? 0).toLocaleString("en-IN");
@@ -441,7 +448,11 @@ const OfflineBookings = ({ embedded = false }) => {
             </Button>
           </div>
 
-          <DataTable data={offlineBookings} columns={offlineColumns} tableClassName="w-full min-w-max" />
+          {search.trim() && !visibleOfflineBookings.length ? (
+            <EmptyState>No offline bookings match "{search.trim()}".</EmptyState>
+          ) : (
+            <DataTable data={visibleOfflineBookings} columns={offlineColumns} tableClassName="w-full min-w-max" />
+          )}
         </ComponentCard>
       </div>
 

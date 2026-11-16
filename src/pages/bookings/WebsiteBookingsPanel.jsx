@@ -26,8 +26,8 @@ const inr = (n) => new Intl.NumberFormat("en-IN", { style: "currency", currency:
 export const isPaidWebsiteBooking = (b) => b?.status === "paid";
 
 // Read-only view of membership purchases made on touchwoodbliss.com.
-const WebsiteBookingsPanel = ({ data, onRefresh, refreshing }) => {
-  const [search, setSearch] = useState("");
+// `search`: guest-name search text from the Bookings page search bar.
+const WebsiteBookingsPanel = ({ data, onRefresh, refreshing, search = "" }) => {
   const [status, setStatus] = useState("all");
   const bookings = data?.bookings || [];
 
@@ -133,8 +133,6 @@ const WebsiteBookingsPanel = ({ data, onRefresh, refreshing }) => {
             Open website console ↗
           </a>
         </div>
-        <input type="search" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Name, email, mobile or payment ref" aria-label="Search website bookings"
-          className="h-10 w-full rounded-lg border border-gray-300 bg-transparent px-3 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-500/10 md:w-72 dark:border-gray-700 dark:text-white/90" />
       </div>
       {data?.stale && <p className="rounded-lg bg-warning-50 px-3 py-2 text-sm text-warning-700 dark:bg-warning-500/15 dark:text-orange-400">{data.message}. Showing the last copy from {formatDateTime(data.fetchedAt)}.</p>}
       {body}

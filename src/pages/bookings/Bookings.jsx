@@ -242,6 +242,16 @@ const Bookings = () => {
         })}
       </div>
 
+      <div className="relative mb-4">
+        <svg className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <circle cx="9" cy="9" r="6.25" stroke="currentColor" strokeWidth="1.6" />
+          <path d="M13.5 13.5L17.5 17.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+        </svg>
+        <input type="search" value={search} onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search by guest name, phone or membership no." aria-label="Search bookings by guest name"
+          className="h-11 w-full rounded-lg border border-gray-300 bg-white pl-10 pr-3 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-white/[0.03] dark:text-white/90" />
+      </div>
+
       {tab === "online" && (
         <div role="group" aria-label="Online booking source" className="mb-4 inline-flex rounded-lg bg-gray-100 p-1 dark:bg-gray-900">
           {[{ key: "app", label: "App", count: counts.online - websiteCount }, { key: "website", label: "Website", count: websiteCount }].map((s) => (
@@ -255,9 +265,9 @@ const Bookings = () => {
       )}
 
       {tab === "offline" ? (
-        <OfflineBookings embedded />
+        <OfflineBookings embedded search={search} />
       ) : tab === "online" && source === "website" ? (
-        <WebsiteBookingsPanel data={website} onRefresh={() => loadWebsite(true)} refreshing={refreshingWebsite} />
+        <WebsiteBookingsPanel data={website} onRefresh={() => loadWebsite(true)} refreshing={refreshingWebsite} search={search} />
       ) : (
         <ComponentCard title={cardTitle} desc={cardDesc}>
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -271,9 +281,7 @@ const Bookings = () => {
                   </button>
                 ))}
               </div>
-            ) : <span />}
-            <input type="search" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search name, phone or membership no" aria-label="Search bookings"
-              className="h-10 w-full rounded-lg border border-gray-300 bg-transparent px-3 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-500/10 md:w-72 dark:border-gray-700 dark:text-white/90" />
+            ) : null}
           </div>
           {rows.length ? (
             <DataTable data={rows} columns={columns} tableClassName="w-full min-w-max" />
