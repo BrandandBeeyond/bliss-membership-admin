@@ -41,6 +41,38 @@ const EMPTY_FORM = {
 const inputClass = "w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder:text-gray-500 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100";
 const formatDate = (value) => (value ? new Date(value).toLocaleDateString("en-GB") : "-");
 
+const WhatsAppIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M17.47 14.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.39-1.47-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.6.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.21 3.08c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.75-.72 2-1.41.25-.69.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35zM12.05 21.5h-.01a9.4 9.4 0 0 1-4.8-1.31l-.34-.2-3.57.94.95-3.48-.22-.36a9.41 9.41 0 0 1-1.44-5.02c0-5.2 4.23-9.43 9.44-9.43a9.37 9.37 0 0 1 6.67 2.77 9.37 9.37 0 0 1 2.76 6.67c0 5.2-4.23 9.43-9.44 9.43zm8.03-17.46A11.27 11.27 0 0 0 12.05.72C5.8.72.71 5.8.71 12.05c0 2 .52 3.95 1.52 5.66L.62 23.28l5.7-1.5a11.3 11.3 0 0 0 5.72 1.46h.01c6.25 0 11.33-5.08 11.34-11.33 0-3.03-1.18-5.88-3.32-8.02z" />
+  </svg>
+);
+
+const APP_LINK = "https://play.google.com/store/apps/details?id=com.touchwoodbliss.membership&pcampaignid=web_share";
+
+// WhatsApp message sent to a member. *text* renders bold in WhatsApp.
+const buildShareMessage = ({ name, phone, membershipNumber, claimCode }) => {
+  const fullName = String(name || "").trim().replace(/\s+/g, " ");
+  return [
+    `Hi ${fullName || "Sir/Ma'am"},`,
+    "",
+    "Welcome to Touchwood Bliss Membership! Please download our app:",
+    APP_LINK,
+    "",
+    ...(fullName ? [`*Name:* ${fullName}`] : []),
+    `*Login mobile number:* ${phone || "-"}`,
+    `*Membership number:* ${membershipNumber || "-"}`,
+    ...(claimCode ? [`*Claim code:* ${claimCode}`, "", "Log in with the mobile number above, then enter your claim code to activate your membership."] : []),
+    "",
+    "If you need any more help, feel free to contact us.",
+    "",
+    "Thank you!",
+    "Team Touchwood Bliss",
+  ].join("\n");
+};
+
+const whatsappUrl = (phone, message) =>
+  `https://wa.me/${phone.length === 10 ? "91" + phone : phone}?text=${encodeURIComponent(message)}`;
+
 // `embedded`: rendered as the Offline tab of the Bookings page, which owns the
 // page title and loads bookings itself.
 // `search`: guest-name search text from the Bookings page search bar.
@@ -59,6 +91,8 @@ const OfflineBookings = ({ embedded = false, search = "" }) => {
   const [generatingCodeId, setGeneratingCodeId] = useState(null);
   const [revealingCodeId, setRevealingCodeId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
+  const [sharingId, setSharingId] = useState(null);
+  const [shareDetails, setShareDetails] = useState(null); // { name, phone, message }
   const [loadingPlans, setLoadingPlans] = useState(false);
   const [formData, setFormData] = useState(EMPTY_FORM);
   const [isImportOpen, setIsImportOpen] = useState(false);
@@ -272,6 +306,49 @@ const OfflineBookings = ({ embedded = false, search = "" }) => {
     finally { setRevealingCodeId(null); }
   };
 
+  // WhatsApp share: fetch (or create, if never issued) the claim code, then
+  // show a preview so the admin can check the message before sending.
+  const openShare = async (booking) => {
+    if (sharingId) return;
+    const phone = String(booking.memberDetails?.phone || "").replace(/\D/g, "");
+    if (!phone) { toast.error("This booking has no mobile number"); return; }
+    const claimable = booking.claimStatus === "Pending" && booking.status === "Active" && new Date(booking.endDate) >= new Date();
+    setSharingId(booking._id);
+    try {
+      let claimCode = "";
+      if (claimable) {
+        const result = booking.claimCodeCreatedAt
+          ? await dispatch(revealOfflineClaimCode(booking._id))
+          : await dispatch(generateOfflineClaimCode(booking._id));
+        claimCode = result?.claimCode || "";
+        if (!booking.claimCodeCreatedAt) dispatch(getAllBookings());
+      }
+      setShareDetails({
+        name: booking.memberDetails?.fullname || "",
+        phone,
+        message: buildShareMessage({
+          name: booking.memberDetails?.fullname,
+          phone: booking.memberDetails?.phone,
+          membershipNumber: booking.membershipNumber,
+          claimCode,
+        }),
+      });
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Could not load the claim code");
+    } finally {
+      setSharingId(null);
+    }
+  };
+
+  const copyShareMessage = async () => {
+    try {
+      await navigator.clipboard.writeText(shareDetails.message);
+      toast.success("Message copied");
+    } catch {
+      toast.error("Could not copy. Select the text and copy it manually.");
+    }
+  };
+
   const handleDelete = async (booking) => {
     if (deletingId) return;
     if (!window.confirm("Delete offline membership " + booking.membershipNumber + " for " + (booking.memberDetails?.fullname || "this member") + "? This permanently removes the booking and its membership access.")) return;
@@ -303,9 +380,25 @@ const OfflineBookings = ({ embedded = false, search = "" }) => {
         {
           header: "Member",
           cell: ({ row }) => (
-            <div className="min-w-[180px]">
-              <div className="font-medium text-gray-800 dark:text-white">{row.original?.memberDetails?.fullname || "-"}</div>
-              <div className={muted}>{row.original?.memberDetails?.phone || "-"}</div>
+            <div className="flex min-w-[210px] items-center gap-3">
+              <button
+                type="button"
+                disabled={Boolean(sharingId)}
+                onClick={() => openShare(row.original)}
+                title="Share app & login details on WhatsApp"
+                aria-label={`Share login details with ${row.original?.memberDetails?.fullname || "member"} on WhatsApp`}
+                className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-success-200 text-success-600 hover:bg-success-50 disabled:opacity-50 dark:border-success-500/30 dark:hover:bg-success-500/10"
+              >
+                {sharingId === row.original._id ? (
+                  <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                ) : (
+                  <WhatsAppIcon />
+                )}
+              </button>
+              <div>
+                <div className="font-medium text-gray-800 dark:text-white">{row.original?.memberDetails?.fullname || "-"}</div>
+                <div className={muted}>{row.original?.memberDetails?.phone || "-"}</div>
+              </div>
             </div>
           ),
         },
@@ -402,7 +495,7 @@ const OfflineBookings = ({ embedded = false, search = "" }) => {
         },
       ];
     },
-    [generatingCodeId, revealingCodeId, deletingId, claimDetails],
+    [generatingCodeId, revealingCodeId, deletingId, sharingId, claimDetails],
   );
 
   return (
@@ -455,6 +548,33 @@ const OfflineBookings = ({ embedded = false, search = "" }) => {
           )}
         </ComponentCard>
       </div>
+
+      <Modal isOpen={Boolean(shareDetails)} onClose={() => setShareDetails(null)} className="mx-4 max-w-[520px] p-6">
+        {shareDetails && (
+          <div>
+            <h3 className="pr-10 text-lg font-semibold text-gray-800 dark:text-white/90">Share on WhatsApp</h3>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              To {shareDetails.name || "member"} · {shareDetails.phone}
+            </p>
+            <pre className="mt-4 max-h-[50vh] overflow-y-auto whitespace-pre-wrap break-words rounded-xl bg-gray-50 p-4 font-sans text-sm text-gray-800 dark:bg-white/[0.03] dark:text-white/90">
+              {shareDetails.message}
+            </pre>
+            <div className="mt-5 flex flex-wrap justify-end gap-3">
+              <Button variant="outline" onClick={copyShareMessage}>Copy message</Button>
+              <a
+                href={whatsappUrl(shareDetails.phone, shareDetails.message)}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setShareDetails(null)}
+                className="inline-flex items-center gap-2 rounded-lg bg-success-600 px-5 py-3.5 text-sm font-medium text-white hover:bg-success-700"
+              >
+                <WhatsAppIcon />
+                Send on WhatsApp
+              </a>
+            </div>
+          </div>
+        )}
+      </Modal>
 
       <Modal isOpen={isCreateModalOpen} onClose={closeCreateModal} className="mx-4 !max-w-[760px] max-h-[90vh] overflow-y-auto">
         <div className="mb-6 pr-10">
