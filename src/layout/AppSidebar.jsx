@@ -65,7 +65,7 @@ const othersItems = [
       { icon: <ListIcon />, name: "Bookings", path: "/bookings", pro: false },
       { icon: <ArrowRightIcon />, name: "User arrivals", path: "/user-arrivals", pro: false },
       { icon: <DollarLineIcon />, name: "Vouchers", path: "/vouchers", pro: false },
-      { icon: <UserCircleIcon />, name: "Customers", path: "/customers", pro: false },
+      { icon: <UserCircleIcon />, name: "Guests", path: "/guests", pro: false },
       
     ],
   },

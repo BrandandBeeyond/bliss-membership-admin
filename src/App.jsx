@@ -15,6 +15,7 @@ import Home from "./pages/Dashboard/Home";
 import Bookings from "./pages/bookings/Bookings";
 import UserArrivals from "./pages/bookings/UserArrivals";
 import Updates from "./pages/updates/Updates";
+import Guests from "./pages/guests/Guests";
 import SignIn from "./pages/AuthPages/SignIn";
 import PublicRoute from "./routes/PublicRoute";
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -55,6 +56,8 @@ export default function App() {
 
               <Route element={<SuperAdminRoute />}>
                 <Route path="/admins" element={<Admins />} />
+                <Route path="/guests" element={<Guests />} />
+                <Route path="/customers" element={<Navigate to="/guests" replace />} />
               </Route>
 
               {/* Others Page */}
