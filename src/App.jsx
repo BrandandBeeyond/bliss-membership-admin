@@ -14,6 +14,7 @@ import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
 import Bookings from "./pages/bookings/Bookings";
 import UserArrivals from "./pages/bookings/UserArrivals";
+import Updates from "./pages/updates/Updates";
 import SignIn from "./pages/AuthPages/SignIn";
 import PublicRoute from "./routes/PublicRoute";
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -75,6 +76,7 @@ export default function App() {
               <Route path="/user-arrivals" element={<UserArrivals />} />
               <Route path="/vouchers" element={<Voucher />} />
               <Route path="/experience-bliss-living" element={<ExperienceStories />} />
+              <Route path="/updates" element={<Updates />} />
             </Route>
           </Route>
 

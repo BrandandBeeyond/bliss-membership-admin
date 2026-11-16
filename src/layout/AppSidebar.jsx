@@ -288,31 +288,17 @@ const AppSidebar = () => {
           !isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
         }`}
       >
-        <Link to="/">
-          {isExpanded || isHovered || isMobileOpen ? (
-            <>
-              <img
-                className="dark:hidden"
-                src="/images/logo/bliss-logo.png"
-                alt="Logo"
-                width={60}
-                height={60}
-              />
-              <img
-                className="hidden dark:block"
-                src="/images/logo/bliss-logo.png"
-                alt="Logo"
-                width={60}
-                height={60}
-              />
-            </>
-          ) : (
-            <img
-              src="/images/logo/logo-icon.svg"
-              alt="Logo"
-              width={32}
-              height={32}
-            />
+        <Link to="/" className="flex items-center gap-3" aria-label="Touchwood Bliss membership console — dashboard">
+          <img
+            src="/images/logo/bliss-logo.png"
+            alt=""
+            className={`shrink-0 object-contain ${isExpanded || isHovered || isMobileOpen ? "h-12 w-12" : "h-9 w-9"}`}
+          />
+          {(isExpanded || isHovered || isMobileOpen) && (
+            <span className="leading-tight">
+              <span className="block text-lg font-semibold tracking-wide text-gray-900 dark:text-white">Touchwood Bliss</span>
+              <span className="block text-xs font-medium uppercase tracking-[0.14em] text-gray-500 dark:text-gray-400">Membership Console</span>
+            </span>
           )}
         </Link>
       </div>
@@ -335,7 +321,7 @@ const AppSidebar = () => {
               </h2>
               {renderMenuItems(mainMenuItems, "main")}
             </div>
-            <div>
+            <div className={isSuperAdmin ? "" : "hidden"}>
               <h2
                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
                   !isExpanded && !isHovered
