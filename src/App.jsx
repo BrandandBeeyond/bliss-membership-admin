@@ -14,6 +14,7 @@ import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
 import Bookings from "./pages/bookings/Bookings";
 import UserArrivals from "./pages/bookings/UserArrivals";
+import MembershipClaims from "./pages/bookings/MembershipClaims";
 import Updates from "./pages/updates/Updates";
 import Guests from "./pages/guests/Guests";
 import SignIn from "./pages/AuthPages/SignIn";
@@ -56,6 +57,9 @@ export default function App() {
 
               <Route element={<SuperAdminRoute />}>
                 <Route path="/admins" element={<Admins />} />
+              </Route>
+
+              <Route element={<AdminBookingsRoute />}>
                 <Route path="/guests" element={<Guests />} />
                 <Route path="/customers" element={<Navigate to="/guests" replace />} />
               </Route>
@@ -74,6 +78,7 @@ export default function App() {
               <Route path="/line-chart" element={<LineChart />} />
               <Route path="/bar-chart" element={<BarChart />} />
 
+              <Route path="/membership-claimed" element={<MembershipClaims />} />
               <Route path="/bookings" element={<Bookings />} />
               <Route path="/offline-bookings" element={<Navigate to="/bookings" replace />} />
               <Route path="/user-arrivals" element={<UserArrivals />} />

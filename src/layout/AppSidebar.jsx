@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import {
   ArrowRightIcon,
   CalenderIcon,
+  CheckCircleIcon,
   ChevronDownIcon,
   DocsIcon,
   DollarLineIcon,
@@ -56,6 +57,19 @@ const cmsItems = [
  
 ];
 
+const claimItems = [
+  {
+    icon: <CheckCircleIcon />,
+    name: "Membership Claimed",
+    path: "/membership-claimed",
+  },
+  {
+    icon: <DollarLineIcon />,
+    name: "Vouchers",
+    path: "/vouchers",
+  },
+];
+
 const othersItems = [
  
   {
@@ -64,7 +78,6 @@ const othersItems = [
     subItems: [
       { icon: <ListIcon />, name: "Bookings", path: "/bookings", pro: false },
       { icon: <ArrowRightIcon />, name: "User arrivals", path: "/user-arrivals", pro: false },
-      { icon: <DollarLineIcon />, name: "Vouchers", path: "/vouchers", pro: false },
       { icon: <UserCircleIcon />, name: "Guests", path: "/guests", pro: false },
       
     ],
@@ -86,7 +99,10 @@ const AppSidebar = () => {
       : navItems;
 
   const isSuperAdmin = admin?.role === "SUPER_ADMIN";
-  const bookingMenuItems = isSuperAdmin ? othersItems : [othersItems[0]];
+  const canSeeGuests = isSuperAdmin || admin?.role === "ADMIN";
+  const bookingMenuItems = canSeeGuests
+    ? othersItems
+    : othersItems.map((item) => ({ ...item, subItems: item.subItems?.filter((sub) => sub.path !== "/guests") }));
   // const isActive = (path: string) => location.pathname === path;
   const isActive = useCallback(
     (path) => location.pathname === path,
@@ -336,6 +352,22 @@ const AppSidebar = () => {
                 )}
               </h2>
               {isSuperAdmin && renderMenuItems(cmsItems, "cms")}
+            </div>
+            <div>
+              <h2
+                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
+                  !isExpanded && !isHovered
+                    ? "lg:justify-center"
+                    : "justify-start"
+                }`}
+              >
+                {isExpanded || isHovered || isMobileOpen ? (
+                  "Membership claimed"
+                ) : (
+                  <HorizontaLDots />
+                )}
+              </h2>
+              {renderMenuItems(claimItems, "claims")}
             </div>
             <div className="">
               <h2
