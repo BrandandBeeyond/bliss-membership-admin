@@ -10,6 +10,7 @@ import Button from "../../components/ui/button/Button";
 import { Modal } from "../../components/ui/modal";
 import { getAllRequestedRedeemVouchers, rejectVoucherRedemption, verifyVoucherwithCode } from "../../redux/actions/VoucherAction";
 import { ListToolbar, StatTile, EmptyState, formatDateTime, daysFromToday, matchesSearch } from "../../components/common/ListToolbar";
+import GuestVoucherLookup from "./GuestVoucherLookup";
 
 const STATUS = { Pending: { label: "Waiting", color: "warning" }, Approved: { label: "Redeemed", color: "success" }, Rejected: { label: "Rejected", color: "error" }, Expired: { label: "Expired", color: "light" } };
 const muted = "text-xs text-gray-500 dark:text-gray-400";
@@ -20,6 +21,7 @@ const Voucher = () => {
   const { vouchers = [], loading } = useSelector((state) => state.vouchers);
   const [tab, setTab] = useState("Pending");
   const [search, setSearch] = useState("");
+  const [guestLookupActive, setGuestLookupActive] = useState(false);
   const [modal, setModal] = useState(null); // { type: "redeem" | "reject", voucher }
   const [quantity, setQuantity] = useState(1);
   const [code, setCode] = useState("");
@@ -49,7 +51,7 @@ const Voucher = () => {
 
   const rows = useMemo(() => vouchers.filter((v) => {
     const member = v.membershipBookingId || {};
-    return (tab === "All" || v.status === tab) && matchesSearch(search, member.memberDetails?.fullname, member.memberDetails?.phone, member.membershipNumber, v.itemName, v.offerTitle);
+    return (tab === "All" || v.status === tab) && matchesSearch(tab === "Approved" ? "" : search,member.memberDetails?.fullname, member.memberDetails?.phone, member.membershipNumber, v.itemName, v.offerTitle);
   }), [vouchers, tab, search]);
 
   const maxQuantity = (v) => Math.max(Math.min(Number(v.quantityRequested || 1), v.remainingQuantity ?? Number(v.quantityRequested || 1)), 0);
@@ -184,8 +186,13 @@ const Voucher = () => {
         </div>
 
         <ComponentCard title="Voucher requests">
-          <ListToolbar tabs={tabs} active={tab} onChange={setTab} search={search} onSearch={setSearch} placeholder="Search member, phone or voucher" />
-          {rows.length ? (
+          <ListToolbar tabs={tabs} active={tab} onChange={setTab} search={search} onSearch={tab === "Approved" ? undefined : setSearch} placeholder="Search member, phone or voucher" />
+          {tab === "Approved" && (
+            <div className="mt-4">
+              <GuestVoucherLookup refreshKey={vouchers} onActiveChange={setGuestLookupActive} />
+            </div>
+          )}
+          {tab === "Approved" && guestLookupActive ? null : rows.length ? (
             <DataTable data={rows} columns={columns} tableClassName="w-full min-w-max" />
           ) : (
             <EmptyState>{loading ? "Loading voucher requests..." : search ? "No requests match your search." : tab === "Pending" ? "No one is waiting. When a member taps Redeem in the app, the request appears here." : "Nothing here yet."}</EmptyState>

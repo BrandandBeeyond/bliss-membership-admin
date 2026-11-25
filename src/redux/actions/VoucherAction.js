@@ -84,3 +84,12 @@ export const rejectVoucherRedemption = (redemptionId, reason) => async (dispatch
   await dispatch(getAllRequestedRedeemVouchers());
   return data;
 };
+
+// Guest lookup for the Redeemed tab: used vs pending voucher quantities per member.
+export const getMemberVoucherBalance = async (name) => {
+  const { data } = await axios.get(`${API_SERVER}/vouchers/member-balance`, {
+    params: { name },
+    headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` },
+  });
+  return data.members || [];
+};
