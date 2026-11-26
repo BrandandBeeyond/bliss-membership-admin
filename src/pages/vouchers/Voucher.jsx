@@ -11,6 +11,7 @@ import { Modal } from "../../components/ui/modal";
 import { getAllRequestedRedeemVouchers, rejectVoucherRedemption, verifyVoucherwithCode } from "../../redux/actions/VoucherAction";
 import { ListToolbar, StatTile, EmptyState, formatDateTime, daysFromToday, matchesSearch } from "../../components/common/ListToolbar";
 import GuestVoucherLookup from "./GuestVoucherLookup";
+import ManualRedeemModal from "./ManualRedeemModal";
 
 const STATUS = { Pending: { label: "Waiting", color: "warning" }, Approved: { label: "Redeemed", color: "success" }, Rejected: { label: "Rejected", color: "error" }, Expired: { label: "Expired", color: "light" } };
 const muted = "text-xs text-gray-500 dark:text-gray-400";
@@ -22,6 +23,7 @@ const Voucher = () => {
   const [tab, setTab] = useState("Pending");
   const [search, setSearch] = useState("");
   const [guestLookupActive, setGuestLookupActive] = useState(false);
+  const [manualOpen, setManualOpen] = useState(false);
   const [modal, setModal] = useState(null); // { type: "redeem" | "reject", voucher }
   const [quantity, setQuantity] = useState(1);
   const [code, setCode] = useState("");
@@ -35,10 +37,10 @@ const Voucher = () => {
 
   // New requests arrive while staff are at the counter, so keep the Pending list fresh.
   useEffect(() => {
-    if (tab !== "Pending" || modal) return undefined;
+    if (tab !== "Pending" || modal || manualOpen) return undefined;
     const timer = setInterval(() => dispatch(getAllRequestedRedeemVouchers()).catch(() => {}), 20000);
     return () => clearInterval(timer);
-  }, [tab, modal, dispatch]);
+  }, [tab, modal, manualOpen, dispatch]);
 
   const counts = useMemo(() => {
     const c = { Pending: 0, Approved: 0, Rejected: 0, redeemedToday: 0, unitsToday: 0 };
@@ -185,7 +187,7 @@ const Voucher = () => {
           <StatTile label="Redeemed overall" value={counts.Approved} hint={`${counts.Rejected} rejected`} />
         </div>
 
-        <ComponentCard title="Voucher requests">
+        <ComponentCard title="Voucher requests" action={<Button type="button" size="sm" variant="primary" onClick={() => setManualOpen(true)}>Redeem voucher</Button>}>
           <ListToolbar tabs={tabs} active={tab} onChange={setTab} search={search} onSearch={tab === "Approved" ? undefined : setSearch} placeholder="Search member, phone or voucher" />
           {tab === "Approved" && (
             <div className="mt-4">
@@ -199,6 +201,8 @@ const Voucher = () => {
           )}
         </ComponentCard>
       </div>
+
+      <ManualRedeemModal isOpen={manualOpen} onClose={() => setManualOpen(false)} onDone={refresh} />
 
       <Modal isOpen={Boolean(modal)} onClose={closeModal} className="mx-4 max-w-[460px] p-6 lg:p-8">
         {voucher && (

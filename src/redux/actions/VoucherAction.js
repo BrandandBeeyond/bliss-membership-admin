@@ -93,3 +93,13 @@ export const getMemberVoucherBalance = async (name) => {
   });
   return data.members || [];
 };
+
+// Manual redeem at the counter (no app code): items = [{ categoryId, itemId, quantity }].
+export const manualRedeemVouchers = async ({ membershipBookingId, items, note }) => {
+  const { data } = await axios.post(
+    `${API_SERVER}/vouchers/voucher/redeem/manual`,
+    { membershipBookingId, items, note },
+    { headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` } },
+  );
+  return data;
+};
